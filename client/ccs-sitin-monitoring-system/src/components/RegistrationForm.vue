@@ -1,11 +1,11 @@
-<script setup>
+<script setup lang="ts">
 import { RouterLink } from 'vue-router'
 import LibraryAmico from './icons/LibraryAmico.vue';
-import { onBeforeUnmount } from 'vue';
+import { onBeforeUnmount, reactive } from 'vue';
 
 
 
-const navigateToRegister = () => {
+const navigateToLogin = () => {
     const elements = document.querySelectorAll('.curtain-shrink')
     elements.forEach(element => {
         element.classList.add('curtain-unshrink')
@@ -14,6 +14,15 @@ const navigateToRegister = () => {
         window.location.href = '/login'
     },500)
 }
+
+const courses = [
+    'BSCS', 'BSIT', 'BSIS', 'BSHM', 'BSCJ', 'BSBA', 'BSCPE', 'BSED'
+]
+
+const yearLevels = [
+    '1st Year', '2nd Year', '3rd Year', '4th Year'
+]
+
 
 </script>
 <template>
@@ -37,22 +46,34 @@ const navigateToRegister = () => {
         <div class="w-1/2 h-full border-l border-[#2a2a2a] flex justify-center items-center flex-col">
             <h1 class="text-3xl mb-7 text-[#00BD7E] font-bold">REGISTER</h1>
             <div class="flex justify-between w-5/7">
-                <input type="text" class="text-[#8e8e8e] my-3 px-2 w-[45%] h-9 border-b-2 border-[#3e3e3e] focus:outline-none placeholder:text-[#8e8e8e]" placeholder="First Name">
-                <input type="text" class="text-[#8e8e8e] my-3 px-2 w-[45%] h-9 border-b-2 border-[#3e3e3e] focus:outline-none placeholder:text-[#8e8e8e]" placeholder="Last Name">
+                <input type="text" class="text-[#8e8e8e] my-3 px-2 w-[30%] h-9 border-b-2 border-[#3e3e3e] focus:outline-none placeholder:text-[#8e8e8e]" placeholder="First Name">
+                <input type="text" class="text-[#8e8e8e] my-3 px-2 w-[32.5%] h-9 border-b-2 border-[#3e3e3e] focus:outline-none placeholder:text-[#8e8e8e]" placeholder="Middle Name">
+                <input type="text" class="text-[#8e8e8e] my-3 px-2 w-[27.5%] h-9 border-b-2 border-[#3e3e3e] focus:outline-none placeholder:text-[#8e8e8e]" placeholder="Last Name">
             </div>
             <input type="text" class="text-[#8e8e8e] my-3 px-2 w-5/7 h-9 border-b-2 border-[#3e3e3e] focus:outline-none placeholder:text-[#8e8e8e]" placeholder="Email Address">
             <div class="flex justify-between w-5/7">
-                <input type="text" class="text-[#8e8e8e] my-3 px-2 w-[30%] h-9 border-b-2 border-[#3e3e3e] focus:outline-none placeholder:text-[#8e8e8e]" placeholder="IDNO">
-                <input type="text" class="text-[#8e8e8e] my-3 px-2 w-[30%] h-9 border-b-2 border-[#3e3e3e] focus:outline-none placeholder:text-[#8e8e8e]" placeholder="Course">
-                <input type="text" class="text-[#8e8e8e] my-3 px-2 w-[30%] h-9 border-b-2 border-[#3e3e3e] focus:outline-none placeholder:text-[#8e8e8e]" placeholder="Year Level">
+                <input type="text" class="text-[#8e8e8e] my-3 px-2 w-[25%] h-9 border-b-2 border-[#3e3e3e] focus:outline-none placeholder:text-[#8e8e8e]" placeholder="IDNO">
+                <select name="course" class="h-9 my-3 px-2 w-[25.7%] border-b-2 border-[#3e3e3e] outline-none placeholder:text-[#8e8e8e]">
+                    <option disabled selected value="Course" class="display-none text-[#8e8e8e] bg-[#181818] outline-none disabled:bg-[#181818]">Course</option>
+                    <option v-for="course in courses" :key="course" :value="course" class="text-[#8e8e8e] bg-[#181818] outline-none">{{ course }}</option>
+                </select>
+                
+                <select name="year level" class="h-9 my-3 px-2 w-[32.5%] border-b-2 border-[#3e3e3e] outline-none placeholder:text-[#8e8e8e]">
+                    <option disabled selected value="Year Level" class="text-[#8e8e8e] bg-[#181818] outline-none">Year Level</option>
+                    <option v-for="yearLevel in yearLevels" :key="yearLevel" :value="yearLevel" class="text-[#8e8e8e] bg-[#181818] outline-none">{{ yearLevel }}</option>
+                </select>
             </div>
             <input type="text" class="text-[#8e8e8e] my-3 px-2 w-5/7 h-9 border-b-2 border-[#3e3e3e] focus:outline-none placeholder:text-[#8e8e8e]" placeholder="Username">
-            <input type="password" class="text-[#8e8e8e] my-3 px-2 w-5/7 h-9 border-b-2 border-[#3e3e3e] focus:outline-none placeholder:text-[#8e8e8e]" placeholder="Password">
+            <div class="flex justify-between w-5/7">
+
+                <input type="password" class="text-[#8e8e8e] my-3 px-2 w-[45%] h-9 border-b-2 border-[#3e3e3e] focus:outline-none placeholder:text-[#8e8e8e]" placeholder="Password">
+                <input type="password" class="text-[#8e8e8e] my-3 px-2 w-[45%] h-9 border-b-2 border-[#3e3e3e] focus:outline-none placeholder:text-[#8e8e8e]" placeholder="Confirm Password">
+            </div>
             <button class="w-5/7 mt-10 px-5 py-2 rounded text-[#ffff] font-semibold cursor-pointer text-lg bg-[#00BD7E] hover:bg-[#00BD7E]/65 transition-colors duration-400">REGISTER</button>
             <div class="flex flex-row xl:flex-row lg:flex-col md:flex-col mt-10 sm:flex-col sm:item-center sm:justify-center">
                 <p class="text-lg text-[#8e8e8e] mr-1.5">Already have an account?</p>
                 <div class="flex justify-center">
-                    <button @click="navigateToRegister" class="w-auto text-[#00BD7E]/75 hover:text-[#00BD7E] font-semibold cursor-pointer text-lg hover:underline transition-colors duration-400">Login Here!</button>
+                    <button @click="navigateToLogin" class="w-auto text-[#00BD7E]/75 hover:text-[#00BD7E] font-semibold cursor-pointer text-lg hover:underline transition-colors duration-400">Login Here!</button>
                 </div>
             </div>
         </div>

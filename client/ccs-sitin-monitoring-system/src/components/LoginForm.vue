@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { RouterLink } from 'vue-router'
 import LibraryAmico from './icons/LibraryAmico.vue';
 import { onBeforeUnmount } from 'vue';

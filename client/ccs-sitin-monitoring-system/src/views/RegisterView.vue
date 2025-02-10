@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
     import RegistrationForm from '@/components/RegistrationForm.vue';
     import { RouterLink } from 'vue-router'
 </script>
