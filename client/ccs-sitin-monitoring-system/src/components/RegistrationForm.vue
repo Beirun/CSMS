@@ -24,6 +24,7 @@ const yearLevels = [
 ]
 
 
+
 </script>
 <template>
     <div class="w-3/5 outline-4 outline-[#181818] h-5/6 absolute flex flex-row pointer-events-none ">
@@ -109,3 +110,4 @@ const yearLevels = [
 }
 
 </style>
+
