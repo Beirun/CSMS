@@ -1,7 +1,18 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 import LibraryAmico from './icons/LibraryAmico.vue';
-import { onBeforeUnmount } from 'vue';
+import { reactive } from 'vue';
+import { getStudent } from '@/api/student';
+import { useStudentStore } from '@/stores/student.store';
+
+const studentStore = useStudentStore();
+
+
+
+const state = reactive({
+    username: '',
+    password: ''
+})
 
 
 
@@ -12,6 +23,24 @@ const navigateToRegister = () => {
     })
     setTimeout(() => {
         window.location.href = '/register'
+    },500)
+}
+
+const navigateToDashboard = async () => {
+    const student = {username: state.username, password: state.password};
+    const {success, studentInfo} = await getStudent(student);
+
+    if (!success) {
+        alert('Invalid username or password');
+        return;
+    }
+    studentStore.setStudent(studentInfo);
+    const elements = document.querySelectorAll('.curtain-shrink')
+    elements.forEach(element => {
+        element.classList.add('curtain-unshrink')
+    })
+    setTimeout(() => {
+        window.location.href = '/dashboard'
     },500)
 }
 
@@ -28,9 +57,9 @@ const navigateToRegister = () => {
     <div class="w-3/5 h-4/5 bg-[#202020] rounded-lg shadow-md shadow-[#101010] flex flex-row">
         <div class="w-1/2 h-full border-r border-[#2a2a2a] flex justify-center items-center flex-col">
             <h1 class="text-3xl mb-7 text-[#00BD7E] font-bold">LOGIN</h1>
-            <input type="text" class="text-[#8e8e8e] my-3 px-2 w-5/7 h-9 border-b-2 border-[#3e3e3e] focus:outline-none before:z-10 before:p-2.5 before:bg-amber-200 placeholder:text-[#8e8e8e]" placeholder="Username">
-            <input type="password" class="text-[#8e8e8e] my-3 px-2 w-5/7 h-9 border-b-2 border-[#3e3e3e] focus:outline-none placeholder:text-[#8e8e8e]" placeholder="Password">
-            <button class="w-5/7 mt-10 px-5 py-2 rounded text-[#ffff] font-semibold cursor-pointer text-lg bg-[#00BD7E] hover:bg-[#00BD7E]/65 transition-colors duration-400">LOGIN</button>
+            <input v-model="state.username" type="text" class="text-[#8e8e8e] my-3 px-2 w-5/7 h-9 border-b-2 border-[#3e3e3e] focus:outline-none before:z-10 before:p-2.5 before:bg-amber-200 placeholder:text-[#8e8e8e]" placeholder="Username">
+            <input v-model="state.password" type="password" class="text-[#8e8e8e] my-3 px-2 w-5/7 h-9 border-b-2 border-[#3e3e3e] focus:outline-none placeholder:text-[#8e8e8e]" placeholder="Password">
+            <button @click="navigateToDashboard" class="w-5/7 mt-10 px-5 py-2 rounded text-[#ffff] font-semibold cursor-pointer text-lg bg-[#00BD7E] hover:bg-[#00BD7E]/65 transition-colors duration-400">LOGIN</button>
             <div class="flex flex-row xl:flex-row lg:flex-col md:flex-col mt-10 sm:flex-col sm:item-center sm:justify-center">
                 <p class="text-lg text-[#8e8e8e] mr-1.5">Don't have an account?</p>
                 <div class="flex justify-center">
