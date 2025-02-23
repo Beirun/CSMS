@@ -1,0 +1,11 @@
+@import './base.css';
+@import 'tailwindcss';
+
+/* #00BD7E */
+/* #181818 */
+
+
+
+@theme{
+    --drop-shadow-logo: 0 5px 5px rgb(	0, 189, 126, .25);
+}
