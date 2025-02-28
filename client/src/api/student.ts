@@ -33,3 +33,8 @@ export const updateStudent = async (student: Student) => {
     const response = await axios.put('http://localhost:3000/student', student);
     return response.data;
 }
+
+export const getStudents = async () => {
+    const response = await axios.get('http://localhost:3000/student')
+    return response.data
+}

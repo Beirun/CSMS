@@ -23,7 +23,7 @@ const state = reactive({
 const router = useRouter()
 
 const navigateToLogin = () => {
-    closeForm
+    closeForm()
     setTimeout(() => {
         router.push('/login')
     },500)
@@ -61,7 +61,8 @@ const handleRegister = async() => {
         yearlevel: state.yearlevel,
         email: state.email,
         username: state.username,
-        password: state.password
+        password: state.password,
+        profile_id: Math.floor(Math.random() * 1453) + 1
     }
 
     const response = await addStudent(newStudent)

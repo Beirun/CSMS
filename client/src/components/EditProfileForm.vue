@@ -5,6 +5,7 @@ import { reactive, ref } from 'vue'
 import { errorToast, successToast } from '@/library/toast'
 import { courses, yearLevels } from '@/library/course'
 import Input from './ui/TextField.vue'
+import { toBase64 } from '@/library/base64'
 const { student, setStudent } = useStudentStore()
 
 const profileInfo = reactive({
@@ -17,6 +18,7 @@ const profileInfo = reactive({
   email: student.email,
   username: student.username,
   password: student.password,
+  poke_icon: student.poke_icon
 })
 
 const studentPassword = reactive({
@@ -155,15 +157,18 @@ const handleChangePassword = () => {
         class="w-full h-full bg-[url('../assets/cover.png')] bg-center rounded-lg shadow-md shadow-[#181818]"
       ></div>
       <div class="relative -top-25 left-10">
-        <img
-          src="./icons/poke-icons/001-bulbasaur.svg"
-          class="absolute size-50 rounded-full border-4 border-[#181818] bg-[#202020] z-10"
+        <div
+          :style="{'background-image': toBase64(student.poke_icon)}"
+          class="absolute size-50 rounded-full bg-contain bg-no-repeat bg-bottom border-4 border-[#181818] bg-[#202020] z-10"
         />
       </div>
     </div>
     <div class="w-[57.5%] my-2 flex flex-col">
       <h1 class="text-[#b2b2b2] text-3xl font-bold">
-        {{ student.firstname }} {{ student.middlename }} {{ student.lastname }}
+        <div class="flex items-end">
+          {{ student.firstname }} {{ student.middlename }} {{ student.lastname }} 
+          <p class="text-[#8e8e8e] text-[16px] pb-1">&nbsp;&nbsp;({{ student.idno }})</p>
+        </div>
       </h1>
       <h1 class="text-xl font-semibold text-[#00BD7E]">{{ student.username }}</h1>
     </div>
@@ -179,16 +184,19 @@ const handleChangePassword = () => {
               placeholder="First Name"
               v-model="profileInfo.firstname"
               type="text"
+              :editable="editStudentName"
               class="w-[20%] my-3"
-            />
-            <Input
+              />
+              <Input
               placeholder="Middle Name"
+              :editable="editStudentName"
               v-model="profileInfo.middlename"
               type="text"
-              class="w-[25%] my-3"
-            />
-            <Input
+              class="w-[25%] my-3" 
+              />
+              <Input
               placeholder="Last Name"
+              :editable="editStudentName"
               v-model="profileInfo.lastname"
               type="text"
               class="w-[20%] my-3"
@@ -219,11 +227,13 @@ const handleChangePassword = () => {
             <Input
               placeholder="First Name"
               v-model="profileInfo.email"
+              :editable="editEmailUsername"
               type="text"
               class="w-[45%] my-3"
-            />
-           
-            <Input
+              />
+              
+              <Input
+              :editable="editEmailUsername"
               placeholder="Last Name"
               v-model="profileInfo.username"
               type="text"
@@ -254,7 +264,7 @@ const handleChangePassword = () => {
         <div class="w-full px-5 pt-5 flex justify-start">
           <h1 class="text-[#e8e8e8] text-xl font-bold">Course and Year Level</h1>
         </div>
-        <div class="w-[70%] h-10 relative mt-[1px]">
+        <div class="w-[70%] h-10 relative mt-[1px]" :class="{ 'pointer-events-none': !editCourseYear }">
           <select
             v-model="profileInfo.course"
             name="course"
@@ -276,7 +286,7 @@ const handleChangePassword = () => {
           </div>
         </div>
 
-        <div class="w-[70%] h-10 relative mt-[1px]">
+        <div class="w-[70%] h-10 relative mt-[1px]" :class="{ 'pointer-events-none': !editCourseYear }">
           <select
             v-model="profileInfo.yearlevel"
             name="year level"
@@ -322,24 +332,27 @@ const handleChangePassword = () => {
 
         <Input
           placeholder="Current Password"
+          :editable="editPassword"
           v-model="studentPassword.currentPassword"
           type="password"
           class="w-full my-2.25"
-        />
-        <Input
+          />
+          <Input
           placeholder="New Password"
+          :editable="editPassword"
           v-model="studentPassword.newPassword"
           type="password"
           class="w-full my-2.25"
-        />
-        <Input
+          />
+          <Input
           placeholder="Confirm Password"
+          :editable="editPassword"
           v-model="studentPassword.confirmPassword"
           type="password"
           class="w-full my-2.25"
         />
         </div>  
-        <div class="w-[70%] flex justify-end pt-6">
+        <div class="w-[70%] flex justify-end pt-5.75">
           <button
             v-if="!editPassword"
             @click="toggleEditPassword"
