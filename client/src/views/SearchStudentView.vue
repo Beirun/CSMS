@@ -161,7 +161,7 @@ ChartJS.register(ArcElement)
 
 <template>
   <div class="items-center justify-start min-h-screen w-screen">
-    <div class="justify-center min-h-screen p-10 max-w-screen flex flex-wrap gap-10 gap-x-20">
+    <div class="justify-center min-h-screen px-20 p-10 max-w-screen flex flex-wrap gap-10 grow gap-x-20">
       <StudentCard
         @click="
           () => {
