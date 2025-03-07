@@ -20,12 +20,22 @@ app.post("/", async (req, res) => {
     }
 })
 
-app.get("/", async (req, res) => {
+app.get("/current", async (req, res) => {
     try {
-        const result = await db.query("SELECT * FROM current_sitins ORDER BY idno;");
+        const result = await db.query("SELECT * from current_sitins;");
         res.json({success: true, sitins: result.rows});
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+})
+
+app.post("/logout/:id", async(req, res)=>{
+    const {id} = req.params;
+    try {
+        const result = await db.query("UPDATE sitin_history SET sitin_timeout = NOW() WHERE sitin_id = $1 RETURNING *;",[id])
+        res.json({success: result.rowCount===1})
+    } catch (error) {
+        res.status(500).json({error: err.message})
     }
 })
 

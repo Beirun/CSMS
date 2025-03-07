@@ -9,20 +9,12 @@ import { getStudents } from '@/api/student'
 import { toBase64 } from '@/library/base64'
 import { addSitIn } from '@/api/sitin'
 import { errorToast, successToast } from '@/library/toast'
+import type { Student } from '@/types/Student'
 
-type Student = {
-  idno: string
-  firstname: string
-  middlename: string
-  lastname: string
-  course: string
-  yearlevel: string
-  email: string
-  username: string
-  password: string
-  sessions: string
-  poke_icon: string
-}
+
+
+const search = ref("")
+const students = ref<Student[]>([])
 const currentStudent = ref<Student>({
   idno: '',
   firstname: '',
@@ -36,10 +28,34 @@ const currentStudent = ref<Student>({
   sessions: '',
   poke_icon: '',
 })
+
+onBeforeMount(async () => {
+  const response = await getStudents()
+  if (response.success) {
+    students.value = response.students
+  }
+})
+
+const filteredStudents = computed(() => {
+  if (!search.value) return students.value;
+  return students.value.filter((student) => {
+    return (
+      student.firstname.toLowerCase().includes(search.value.toLowerCase()) ||
+      student.lastname.toLowerCase().includes(search.value.toLowerCase()) ||
+      String(student.idno).toLowerCase().includes(search.value.toLowerCase()) || // Convert to string
+      student.username.toLowerCase().includes(search.value.toLowerCase()) ||
+      student.email.toLowerCase().includes(search.value.toLowerCase()) ||
+      student.course.toLowerCase().includes(search.value.toLowerCase()) ||
+      student.yearlevel.toLowerCase().includes(search.value.toLowerCase()) ||
+      student.middlename.toLowerCase().includes(search.value.toLowerCase())
+    );
+  });
+});
+
+
 const isOpen = ref(false)
 const laboratories = ['524', '526', '528', '530', '542', '544']
 
-const students = ref<Student[]>([])
 // const percent = computed(
 //   () => Math.round(Number(currentStudent.value.sessions) / 30) * 100,
 // )
@@ -127,12 +143,6 @@ function openModal() {
   isOpen.value = true
 }
 
-onBeforeMount(async () => {
-  const response = await getStudents()
-  if (response.success) {
-    students.value = response.students
-  }
-})
 
 const handleSitin = async () => {
   const newSitin = {
@@ -160,8 +170,15 @@ ChartJS.register(ArcElement)
 </script>
 
 <template>
-  <div class="items-center justify-start min-h-screen w-screen">
-    <div class="justify-center min-h-screen px-20 p-10 max-w-screen flex flex-wrap gap-10 grow gap-x-20">
+  <div class="items-center justify-center min-h-screen w-screen">
+    <div class="w-full flex justify-between px-25 mt-25 mb-20">
+      <p class="font-bold text-5xl">STUDENTS</p>
+      <div class="w-1/3 flex">
+        <input v-model="search" placeholder="Search For Student" class="peer w-full placeholder:text-[#8e8e8e] text-lg py-2 px-4 pl-11.5 outline-none border-1 border-transparent bg-[#2e2e2e] transition-all duration-300 focus:border-primary rounded-md" type="text">
+        <i class="pi pi-search absolute pt-3.75 pl-4 pointer-events-none transition-all duration-300 peer-focus:text-primary"></i>
+      </div>
+    </div>
+    <div v-if="filteredStudents.length !== 0" class="justify-center min-h-screen px-20 p-10 max-w-screen flex flex-wrap gap-10 grow gap-x-20">
       <StudentCard
         @click="
           () => {
@@ -169,10 +186,13 @@ ChartJS.register(ArcElement)
             setIsOpen(true)
           }
         "
-        v-for="student in students"
+        v-for="student in filteredStudents"
         :key="student.idno"
         :student="student"
       />
+    </div>
+    <div v-else  class="justify-center items-center h-150 flex">
+      <p class="text-4xl font-bold">NO STUDENT FOUND</p>
     </div>
   </div>
   <TransitionRoot appear :show="isOpen" as="template">

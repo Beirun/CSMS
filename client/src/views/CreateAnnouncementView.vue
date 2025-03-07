@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getAnnouncements } from '@/api/announcement'
+import { addAnnouncement, getAnnouncements } from '@/api/announcement'
 import Megaphone from '@/components/icons/Megaphone.vue'
 import { onBeforeMount, ref } from 'vue'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
@@ -14,11 +14,19 @@ const closeModal = () => {
   isOpen.value = false
 }
 
+const announcement = ref('')
 const announcements = ref<Announcement[]>([])
 const isOpen = ref(false)
 onBeforeMount(async () => {
   announcements.value = await getAnnouncements()
 })
+
+const handleCreateAnnouncement = async () => {
+  const response = await addAnnouncement(announcement.value)
+  announcements.value = await getAnnouncements()
+  closeModal()
+}
+
 </script>
 <template>
   <div class="min-h-screen w-screen flex flex-col items-center">
@@ -57,10 +65,17 @@ onBeforeMount(async () => {
                 leave-to="opacity-0 scale-95"
               >
                 <DialogPanel
-                  class="text-lg flex justify-center items-center w-200 h-100 bg-[#2e2e2e] transform overflow-hidden rounded-2xl p-6 text-left align-middle shadow-xl transition-all"
+                  class="text-lg flex justify-center items-center w-200 h-150 bg-[#2e2e2e] transform overflow-hidden rounded-2xl p-6 text-left align-middle shadow-xl transition-all"
                 >
-                <div>
-
+                <div class="flex flex-col gap-5 justify-between items-center h-full py-5 pt-10">
+                    <DialogTitle as="h3" class="text-5xl font-bold leading-6 text-[#00BD7E]">ANNOUNCEMENT</DialogTitle>
+                    <textarea v-model="announcement" class="bg-[#3a3a3a] focus:outline-none rounded-md p-5 resize-none bg-" cols="75" rows="9" placeholder="What do you want to announce?"></textarea>
+                    <button
+                    @click="handleCreateAnnouncement"
+                    class="focus:outline-none w-full h-15 px-5 py-2 rounded text-[#ffff] font-semibold cursor-pointer text-lg bg-[#00BD7E] hover:bg-[#00BD7E]/65 transition-colors duration-400"
+                  >
+                    CREATE ANNOUNCEMENT
+                  </button>
                 </div>
                 </DialogPanel>
               </TransitionChild>

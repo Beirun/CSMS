@@ -15,7 +15,7 @@ app.get("/", async (req, res) => {
 app.post("/", async (req, res) => {
     try {
         const { announcement_message, announcement_date} = req.body;
-        const result = await db.query("INSERT INTO announcement(announcement_message, announcement_date) VALUES ($1, $2) RETURNING *;",[announcement_message, announcement_date]);
+        const result = await db.query("INSERT INTO announcement(announcement_message, announcement_date) VALUES ($1, NOW()) RETURNING *;",[announcement_message]);
         res.json({ success: result.rowCount === 1 });
     } catch (err) {
         res.status(500).json({ error: err.message });
