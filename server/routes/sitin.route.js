@@ -39,5 +39,13 @@ app.post("/logout/:id", async(req, res)=>{
     }
 })
 
+app.get("/", async (req, res) => {
+    try {
+        const result = await db.query("SELECT * from sitins;");
+        res.json({success: true, sitins: result.rows});
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+})
 
 export default app

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import SitinCard from '@/components/SitinCard.vue'
 import { getCurrentSitin, logoutSitin } from '@/api/sitin'
+import AdminNavbar from '@/components/AdminNavbar.vue'
 import { toBase64 } from '@/library/base64'
 import type { CurrentSitin } from '@/types/Sitin'
 import { computed, onBeforeMount, ref } from 'vue'
@@ -82,17 +83,19 @@ const handleLogoutSitin = async () => {
 }
 </script>
 <template>
-  <div class="items-center justify-start min-h-screen w-screen">
+    <AdminNavbar/>
+
+  <div class="items-center justify-start min-h-screen w-screen flex flex-col pt-10">
     <div class="w-full flex justify-between px-25 mt-25 mb-20">
       <p class="font-bold text-5xl">CURRENT SITINS</p>
       <div class="w-1/3 flex">
-        <input v-model="search" placeholder="Search For Student" class="peer w-full placeholder:text-[#8e8e8e] text-lg py-2 px-4 pl-11.5 outline-none border-1 border-transparent bg-[#2e2e2e] transition-all duration-300 focus:border-primary rounded-md" type="text">
+        <input v-model="search" placeholder="Search For Seated Student" class="peer w-full placeholder:text-[#8e8e8e] text-lg py-2 px-4 pl-11.5 outline-none border-1 border-transparent bg-[#2e2e2e] transition-all duration-300 focus:border-primary rounded-md" type="text">
         <i class="pi pi-search absolute pt-3.75 pl-4 pointer-events-none transition-all duration-300 peer-focus:text-primary"></i>
       </div>
     </div>
     <div
       v-if="filteredSitins.length !== 0"
-      class="justify-center min-h-screen px-20 p-10 max-w-screen flex flex-wrap gap-10 grow gap-x-20"
+      class="justify-center min-h-[20vh]  px-20 p-10 max-w-screen flex flex-wrap gap-10 grow gap-x-20"
     >
       <SitinCard
         @click="

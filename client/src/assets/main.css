@@ -9,4 +9,6 @@
 @theme{
     --drop-shadow-logo: 0 5px 5px rgb(	0, 189, 126, .25);
     --color-primary: #00BD7E;
+    --drop-shadow-announcement-card-left: -20px 5px 10px #00BD7E;
+    --drop-shadow-announcement-card-right: 20px 5px 10px #00BD7E;
 }

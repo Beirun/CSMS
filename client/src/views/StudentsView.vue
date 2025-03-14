@@ -3,6 +3,7 @@ import StudentCard from '@/components/StudentCard.vue'
 import { ref, computed, reactive, onBeforeMount } from 'vue'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
 import { Chart as ChartJS, ArcElement } from 'chart.js'
+import AdminNavbar from '@/components/AdminNavbar.vue'
 import { Doughnut } from 'vue-chartjs'
 import Input from '@/components/ui/TextField.vue'
 import { getStudents } from '@/api/student'
@@ -145,6 +146,10 @@ function openModal() {
 
 
 const handleSitin = async () => {
+  if(state.sitin_purpose === '' || state.sitin_laboratory === '') {
+    errorToast('Please fill out all the fields')
+    return
+  }
   const newSitin = {
     idno: currentStudent.value.idno,
     sitin_purpose: state.sitin_purpose,
@@ -163,14 +168,16 @@ const handleSitin = async () => {
       return student
     })
   } else {
-    errorToast('Student is already sitted-in')
+    errorToast('Student is already seated-in')
   }
 }
 ChartJS.register(ArcElement)
 </script>
 
 <template>
-  <div class="items-center justify-center min-h-screen w-screen">
+    <AdminNavbar/>
+
+  <div class="items-center justify-center min-h-screen w-screen pt-10">
     <div class="w-full flex justify-between px-25 mt-25 mb-20">
       <p class="font-bold text-5xl">STUDENTS</p>
       <div class="w-1/3 flex">

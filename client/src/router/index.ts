@@ -8,9 +8,10 @@ import LabRulesView from '@/views/LabRulesView.vue';
 import HistoryView from '@/views/HistoryView.vue';
 import AnnouncementView from '@/views/AnnouncementView.vue';
 import ReservationView from '@/views/ReservationView.vue';
-import SearchStudentView from '@/views/SearchStudentView.vue';
+import SearchStudentView from '@/views/StudentsView.vue';
 import SitinsView from '@/views/SitinsView.vue';
 import CreateAnnouncementView from '@/views/CreateAnnouncementView.vue';
+import SitinRecordsView from '@/views/SitinRecordsView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -61,8 +62,8 @@ const router = createRouter({
       component: ReservationView
     },
     {
-      path: '/search',
-      name: 'search',
+      path: '/students',
+      name: 'students',
       component: SearchStudentView
     },
     {
@@ -74,6 +75,11 @@ const router = createRouter({
       path: '/announce',
       name: 'announce',
       component: CreateAnnouncementView
+    },
+    {
+      path: '/records',
+      name: 'records',
+      component: SitinRecordsView
     }
   ],
 })

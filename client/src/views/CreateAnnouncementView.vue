@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { addAnnouncement, getAnnouncements } from '@/api/announcement'
 import Megaphone from '@/components/icons/Megaphone.vue'
+import AdminNavbar from '@/components/AdminNavbar.vue'
 import { onBeforeMount, ref } from 'vue'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
+import { errorToast, successToast } from '@/library/toast'
+import { setDate } from '@/library/date'
+import type { Announcement } from '@/types/announcement'
+const loaded = ref(false)
 
-type Announcement = {
-  announcement_id: string
-  announcement_message: string
-  announcement_date: string
-}
 
 const closeModal = () => {
   isOpen.value = false
@@ -18,17 +18,29 @@ const announcement = ref('')
 const announcements = ref<Announcement[]>([])
 const isOpen = ref(false)
 onBeforeMount(async () => {
-  announcements.value = await getAnnouncements()
+  const response = await getAnnouncements()
+  announcements.value = response.announcements;
+  loaded.value = true
 })
 
 const handleCreateAnnouncement = async () => {
+  if(announcement.value === '') {
+    errorToast('Please fill out all the fields')
+    return
+  }
   const response = await addAnnouncement(announcement.value)
-  announcements.value = await getAnnouncements()
-  closeModal()
+  if (response.success) {
+    successToast('Announcement created successfully')
+    announcement.value = ''
+    const response = await getAnnouncements()
+    announcements.value = response.announcements;
+    closeModal()
+  }
 }
 
 </script>
 <template>
+  <AdminNavbar/>
   <div class="min-h-screen w-screen flex flex-col items-center">
     <div class="w-[85%] pt-25">
       <button
@@ -85,9 +97,69 @@ const handleCreateAnnouncement = async () => {
       </TransitionRoot>
     </div>
     <div class="w-[85%] h-[5px] bg-[#4d4d4d] my-10"></div>
-    <div class="min-h-100 w-[85%] pb-10 flex items-center justify-center">
-      <div v-if="announcements.length > 0"></div>
+    <!-- <div class="min-h-100 flex items-center justify-center">
+          
+    </div> -->
+    <div class="min-h-100 w-[85%] pb-15 flex items-center justify-center">
+      <div v-if="announcements.length > 0" class="flex flex-col gap-25 py-5">
+        <div class="w-full flex " :class="index % 2 === 1 ? 'flex-row-reverse' : ''" v-for="(announcement,index) in announcements" :key="announcement.announcement_id">
+          <div :class="index % 2 === 1 ? 'hover:drop-shadow-announcement-card-right hover:-translate-x-7.5' : 'hover:drop-shadow-announcement-card-left hover:translate-x-7.5'" class="shadow-lg shadow-black/50 flex flex-col gap-2 w-2/3 bg-[#2e2e2e] p-5 rounded-md  transition-all duration-300  hover:shadow-md hover:shadow-[#2e2e2e]">
+            <p class="text-4xl font-bold">CCS Admin</p>
+            <p class="text-2xl font-semibold">{{ setDate(announcement.announcement_date) }}</p>
+            <p class="text-xl font-semibold">{{ announcement.announcement_message }}</p>
+          </div>
+        </div>
+      </div>
       <div v-else class="text-4xl font-bold">NO ANNOUNCEMENTS YET</div>
     </div>
   </div>
 </template>
+
+<style scoped>
+
+.pokemon {
+  position: relative;
+  height: 100px;
+  width: 100px;
+  background: linear-gradient(to bottom, rgb(254, 0, 1) 50%, white 50% );
+  border-radius: 50%;
+  border: 8px solid black;
+  animation: spin 1s linear infinite;
+}
+
+.pokemon::before {
+  content: '';
+  position: absolute;
+  height: 8px;
+  width: 100px;
+  background: black;
+  top: 50px;
+  transform: translatey(-50%);
+}
+
+.pokemon::after {
+  content: '';
+  position: absolute;
+  height: 38px;
+  width: 38px;
+  border-radius: 50%;
+  background: white;
+  top: 50px;
+  left: 50px;
+  transform: translate(-50%, -50%);
+  box-shadow: inset 0 0 0 8px black, inset 0 0 0 10px white, inset 0 0 0 12px black;
+
+}
+
+/* Spin Animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+</style>

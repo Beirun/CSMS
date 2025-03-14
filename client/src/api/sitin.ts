@@ -21,3 +21,8 @@ export const logoutSitin = async (sitin_id : string) => {
     const response = await axios.post('http://localhost:3000/sitin/logout/'+sitin_id)
     return response.data;
 }
+
+export const getSitins = async () => {
+    const response = await axios.get('http://localhost:3000/sitin');
+    return response.data;
+}
