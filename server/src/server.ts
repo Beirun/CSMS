@@ -1,8 +1,8 @@
 import express from "express";
 import cors from "cors";
-import studentRoute from "./routes/student.route.js";
-import sitinRoute from "./routes/sitin.route.js";
-import announcementRoute from "./routes/announcement.route.js";
+import studentRoute from "./routes/student.route";
+import sitinRoute from "./routes/sitin.route";
+import announcementRoute from "./routes/announcement.route";
 const app = express();
 
 app.use(cors());

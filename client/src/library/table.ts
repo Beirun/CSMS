@@ -11,3 +11,8 @@ export const tableHeaders = [
     'Time In',
     'Time Out'
 ]
+
+export const SitinTableHeaders = [
+    ...tableHeaders,
+    'Action'
+]

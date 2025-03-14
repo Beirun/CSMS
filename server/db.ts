@@ -1,8 +1,8 @@
-import pg from 'pg';
+import pg, { Pool } from 'pg';
 
 
 
-const pool = new pg.Pool({
+const pool : Pool = new pg.Pool({
     user: 'postgres',
     host: 'localhost',
     database: 'ccs',
