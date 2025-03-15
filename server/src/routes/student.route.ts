@@ -24,7 +24,8 @@ app.get("/idno/:id", async (req : Request, res : Response) => {
 
 app.post("/", async (req : Request, res : Response) => {
     try {
-        const {idno, firstname, middlename, lastname, course, yearlevel, email, username, password, profile_id} = req.body;
+        const {idno, firstname, lastname, course, yearlevel, email, username, password, profile_id} = req.body;
+        const middlename : string = req.body.middlename.trim() === "" ? null : req.body.middlename;
         const result = await db.query("INSERT INTO student VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *;",[idno, firstname, middlename, lastname, course, yearlevel, email, username, password, profile_id]);
         res.json({ success: result.rowCount === 1 });
     } catch (err : any) {

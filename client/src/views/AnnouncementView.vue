@@ -3,7 +3,7 @@ import { onBeforeMount } from 'vue';
 import { getAnnouncements } from '@/api/announcement'
 import { ref } from 'vue'
 import NavbarDashboard from '@/components/NavbarDashboard.vue';
-import type { Announcement } from '@/types/announcement'
+import type { Announcement } from '@/types/Announcement'
 import { setDate } from '@/library/date'
 
 const announcements = ref<Announcement[]>([])

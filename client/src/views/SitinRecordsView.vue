@@ -24,18 +24,17 @@ onBeforeMount(async () => {
             <table class="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
-                  <th
-                    v-for="header in tableHeaders"
-                    scope="col"
-                    class="px-6 py-3 text-middle text-md font-medium text-[#f8f8f8] uppercase"
-                  >
+                  <th v-for="(header, index) in tableHeaders" :key="index" scope="col"
+                    class="px-6 py-3 text-middle text-xl font-bold text-[#f8f8f8] uppercase">
                     {{ header }}
                   </th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-gray-200">
-                <tr v-for="(sitin, index) in sitins" :key="sitin.sitin_id">
-                  <td v-for="(values, index2) in sitin" :key="index" class="px-6 py-4 whitespace-nowrap text-md text-[#8e8e8e]">{{ index2 === 'sitin_timein' || index2 === 'sitin_timeout' ? setDate(values) : values }}</td>
+              <tbody>
+                <tr :class="index % 2 === 0 ? 'bg-[#202020]' : ''" class="text-lg text-[#f8f8f8]" v-for="(sitin, index) in sitins" :key="sitin.sitin_id">
+                  <td v-for="(values, index2) in sitin" :key="index"
+                    class="px-6 py-6 whitespace-nowrap font-semibold text-md text-[#8e8e8e]" :class="index2 ==='sitin_laboratory'? 'w-20 text-center': index2 === 'course' || index2 === 'yearlevel' ? 'text-center': ''">
+                    {{ index2 === 'sitin_timein' || index2 === 'sitin_timeout' ? setDate(values) : values }}</td>
                 </tr>
               </tbody>
             </table>

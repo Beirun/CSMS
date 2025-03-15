@@ -4,7 +4,7 @@ import axios from 'axios';
 type Student = {
     idno: string;
     firstname: string;
-    middlename: string;
+    middlename: string | null;
     lastname: string;
     course: string;
     yearlevel: string;

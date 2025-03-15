@@ -6,7 +6,7 @@ import { onBeforeMount, ref } from 'vue'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
 import { errorToast, successToast } from '@/library/toast'
 import { setDate } from '@/library/date'
-import type { Announcement } from '@/types/announcement'
+import type { Announcement } from '@/types/Announcement'
 const loaded = ref(false)
 
 

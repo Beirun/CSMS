@@ -1,9 +1,6 @@
 export const tableHeaders = [
-    '',
     'IDNO',
-    'First Name',
-    'Middle Name',
-    'Last Name',
+    'Full Name',
     'Course',
     'Year Level',
     'Sit-in Purpose',

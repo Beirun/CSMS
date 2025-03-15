@@ -17,9 +17,7 @@ export type CurrentSitin = {
 export type Sitin = {
     sitin_id: string
     idno: string
-    firstname: string
-    middlename: string
-    lastname: string
+    fullname: string
     course: string
     yearlevel: string
     sitin_purpose: string
