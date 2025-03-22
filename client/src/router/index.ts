@@ -12,7 +12,7 @@ import SearchStudentView from '@/views/StudentsView.vue';
 import SitinsView from '@/views/SitinsView.vue';
 import CreateAnnouncementView from '@/views/CreateAnnouncementView.vue';
 import SitinRecordsView from '@/views/SitinRecordsView.vue';
-
+import FeedbackView from '@/views/FeedbackView.vue';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -80,6 +80,11 @@ const router = createRouter({
       path: '/records',
       name: 'records',
       component: SitinRecordsView
+    },
+    {
+      path: '/feedbacks',
+      name: 'feedbacks',
+      component: FeedbackView
     }
   ],
 })

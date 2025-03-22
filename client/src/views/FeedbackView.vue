@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import AdminNavbar from '@/components/AdminNavbar.vue'
 import { onBeforeMount, ref } from 'vue'
-import { getSitins } from '@/api/sitin'
+import { getSitinFeedbacks } from '@/api/feedback'
 import { setDate } from '@/library/date'
-import type { Sitin } from '@/types/Sitin'
-import { tableHeaders } from '@/library/table'
+import type { StudentSitinFeedback } from '@/types/feedback'
+import { FeedbackTableHeaders    } from '@/library/table'
 
-const sitins = ref<Sitin[]>([])
+const sitins = ref<StudentSitinFeedback[]>([])
 onBeforeMount(async () => {
-  const response = await getSitins()
+  const response = await getSitinFeedbacks()
   sitins.value = response.sitins
   console.log(sitins.value)
 })
@@ -17,14 +17,14 @@ onBeforeMount(async () => {
 <template>
   <AdminNavbar />
   <div class="flex flex-row items-start justify-center h-screen w-screen pt-40">
-    <div class="flex flex-col w-[85%]">
+    <div class="flex flex-col w-[90%]">
       <div class="-m-1.5 overflow-x-auto">
         <div class="p-1.5 min-w-full inline-block align-middle">
           <div class="overflow-hidden">
             <table class="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
-                  <th v-for="(header, index) in tableHeaders" :key="index" scope="col"
+                    <th v-for="(header, index) in FeedbackTableHeaders" :key="index" scope="col"
                     class="px-6 py-3 text-middle text-xl font-bold text-[#f8f8f8] uppercase">
                     {{ header }}
                   </th>
@@ -32,10 +32,11 @@ onBeforeMount(async () => {
               </thead>
               <tbody>
                 <tr :class="index % 2 === 0 ? 'bg-[#202020]' : ''" class="text-lg text-[#f8f8f8]" v-for="(sitin, index) in sitins" :key="sitin.sitin_id">
-                  <td v-for="field in ['idno', 'fullname', 'course', 'yearlevel', 'sitin_purpose', 'sitin_laboratory', 'sitin_timein', 'sitin_timeout']" :key="field"
+                  <td v-for="field in ['idno', 'fullname', 'course', 'yearlevel', 'sitin_purpose', 'sitin_laboratory', 'sitin_timein', 'sitin_timeout', 'sitin_feedback']" :key="field"
                     class="px-6 py-6 whitespace-nowrap font-semibold text-md text-[#8e8e8e]" 
-                    :class="field === 'sitin_laboratory' ? 'w-20 text-center' : field === 'course' || field === 'yearlevel' ? 'text-center' : ''">
-                    {{ field === 'sitin_timein' || field === 'sitin_timeout' ? setDate(sitin[field as keyof Sitin]) : sitin[field as keyof Sitin] }}
+                    :class="field === 'sitin_laboratory' ? 'w-20 text-center' : field === 'course' || field === 'yearlevel' ? 'text-center' : field === 'sitin_timein' ? 'w-20 text-center' : ''"
+                    >
+                    {{ field === 'sitin_timein' || field === 'sitin_timeout' ? setDate(sitin[field as keyof StudentSitinFeedback]) : sitin[field as keyof StudentSitinFeedback] }}
                   </td>
                 </tr>
               </tbody>
@@ -45,4 +46,5 @@ onBeforeMount(async () => {
       </div>
     </div>
   </div>
+  
 </template>

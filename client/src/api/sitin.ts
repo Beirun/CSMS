@@ -26,3 +26,9 @@ export const getSitins = async () => {
     const response = await axios.get('http://localhost:3000/sitin');
     return response.data;
 }
+
+export const getSitinsByStudent = async (idno: string) => {
+    const response = await axios.get('http://localhost:3000/sitin/student/'+idno);
+    return response.data;
+}
+

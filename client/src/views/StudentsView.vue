@@ -48,7 +48,7 @@ const filteredStudents = computed(() => {
       student.email.toLowerCase().includes(search.value.toLowerCase()) ||
       student.course.toLowerCase().includes(search.value.toLowerCase()) ||
       student.yearlevel.toLowerCase().includes(search.value.toLowerCase()) ||
-      student.middlename.toLowerCase().includes(search.value.toLowerCase())
+      student.middlename?.toLowerCase().includes(search.value.toLowerCase())
     );
   });
 });
