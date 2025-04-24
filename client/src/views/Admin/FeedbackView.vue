@@ -33,8 +33,7 @@ onBeforeMount(async () => {
               <tbody>
                 <tr :class="index % 2 === 0 ? 'bg-[#202020]' : ''" class="text-lg text-[#f8f8f8]" v-for="(sitin, index) in sitins" :key="sitin.sitin_id">
                   <td v-for="field in ['idno', 'fullname', 'course', 'yearlevel', 'sitin_purpose', 'sitin_laboratory', 'sitin_timein', 'sitin_timeout', 'sitin_feedback']" :key="field"
-                    class="px-6 py-6 whitespace-nowrap font-semibold text-md text-[#8e8e8e]" 
-                    :class="field === 'sitin_laboratory' ? 'w-20 text-center' : field === 'course' || field === 'yearlevel' ? 'text-center' : field === 'sitin_timein' ? 'w-20 text-center' : ''"
+                    class="px-6 py-6 font-semibold text-md text-[#8e8e8e] text-center" 
                     >
                     {{ field === 'sitin_timein' || field === 'sitin_timeout' ? setDate(sitin[field as keyof StudentSitinFeedback]) : sitin[field as keyof StudentSitinFeedback] }}
                   </td>

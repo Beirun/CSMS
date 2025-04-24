@@ -15,7 +15,7 @@
         <RouterLink to="/sitins">Sit-ins</RouterLink>
         <RouterLink to="/records">Records</RouterLink>
         <RouterLink to="/feedbacks">Feedbacks</RouterLink>
-        <RouterLink class="w-25 py-1 px-2 cursor-pointer bg-[#00BD7E] hover:bg-[#00BD7E]/65 text-white rounded flex item-center justify-center transition-colors duration-400" to="/login">Logout</RouterLink>
+        <RouterLink class="w-25 py-1 px-2 cursor-pointer bg-[#00BD7E] hover:bg-[#00BD7E]/65 text-gray-800 rounded flex item-center justify-center transition-colors duration-400" to="/login">Logout</RouterLink>
       </div>
     </div>
   </template>

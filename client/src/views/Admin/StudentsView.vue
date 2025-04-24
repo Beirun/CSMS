@@ -8,13 +8,22 @@ import { Doughnut } from 'vue-chartjs'
 import Input from '@/components/ui/TextField.vue'
 import { getStudents } from '@/api/student'
 import { toBase64 } from '@/library/base64'
-import { addSitIn } from '@/api/sitin'
+import { addSitIn, resetAllSessions, resetStudentSession } from '@/api/sitin'
 import { errorToast, successToast } from '@/library/toast'
+import { purposes, laboratories } from '@/library/list'
 import type { Student } from '@/types/Student'
-
+import ConfirmationDialog from '@/components/ConfirmationDialog.vue'
 
 
 const search = ref("")
+const resetConfirmation = reactive({
+  isOpen: false,
+  closeModal: () => resetConfirmation.isOpen = false,
+})
+const resetStudentConfirmation = reactive({
+  isOpen: false,
+  closeModal: () => resetStudentConfirmation.isOpen = false,
+})
 const students = ref<Student[]>([])
 const currentStudent = ref<Student>({
   idno: '',
@@ -55,7 +64,6 @@ const filteredStudents = computed(() => {
 
 
 const isOpen = ref(false)
-const laboratories = ['524', '526', '528', '530', '542', '544']
 
 // const percent = computed(
 //   () => Math.round(Number(currentStudent.value.sessions) / 30) * 100,
@@ -104,6 +112,10 @@ const options = {
 
 function setIsOpen(value: boolean) {
   isOpen.value = value
+  setStudentDetails()
+}
+
+function setStudentDetails(){
   let percentage = Math.round((Number(currentStudent.value.sessions) / 30) * 100)
   console.log('percentage', percentage)
   console.log('currentStudent', currentStudent.value.sessions)
@@ -144,6 +156,30 @@ function openModal() {
   isOpen.value = true
 }
 
+const resetSessions = async () => {
+  const response = await resetAllSessions()
+  console.log(response)
+  if (response.success) {
+    successToast('All sessions reset successfully')
+    resetConfirmation.closeModal()
+    const response = await getStudents()
+    if (response.success) {
+      students.value = response.students
+    }
+  }
+}   
+
+const resetStudentSessions = async () => {
+  const response = await resetStudentSession(currentStudent.value.idno)
+  console.log(response)
+  if (response.success) {
+    currentStudent.value.sessions = "30";
+    students.value = students.value.map((student)=> currentStudent.value.idno == student.idno ?  currentStudent.value : student)
+    setStudentDetails()
+    successToast('Student session reset successfully')
+    resetStudentConfirmation.closeModal()
+  }
+}
 
 const handleSitin = async () => {
   if(state.sitin_purpose === '' || state.sitin_laboratory === '') {
@@ -156,17 +192,16 @@ const handleSitin = async () => {
     sitin_laboratory: state.sitin_laboratory,
   }
   console.log(newSitin)
+  if(currentStudent.value.sessions === "0"){
+    errorToast("Error! No sessions left")
+    return
+  }
   const response = await addSitIn(newSitin)
 
   if (response.success) {
     successToast('Sit-in added successfully')
     closeModal()
-    students.value.map((student) => {
-      if (student.idno === currentStudent.value.idno) {
-        student.sessions = String(Number(student.sessions) - 1)
-      }
-      return student
-    })
+    
   } else {
     errorToast('Student is already seated-in')
   }
@@ -179,7 +214,21 @@ ChartJS.register(ArcElement)
 
   <div class="items-center justify-center min-h-screen w-screen pt-10">
     <div class="w-full flex justify-between px-25 mt-25 mb-20">
-      <p class="font-bold text-5xl">STUDENTS</p>
+      <div class="flex">
+        <p class="font-bold text-5xl">STUDENTS</p>
+        <button @click="()=>resetConfirmation.isOpen = true" class="cursor-pointer px-4 py-1 border-2 rounded-md border-primary text-primary ml-7.5 hover:bg-primary hover:text-gray-800 transition-all duration-300">Reset All Sessions</button>
+        <ConfirmationDialog :isOpen="resetConfirmation.isOpen" :closeModal="resetConfirmation.closeModal"
+          class="text-lg flex flex-col items-center w-150 h-45 bg-[#2e2e2e] transform overflow-hidden rounded-2xl p-8 text-left align-middle shadow-xl transition-all"
+        >
+        <div>
+          <p class="text-2xl font-bold">Are you sure you want to reset all sessions?</p>
+          <div class="flex justify-end mt-10">
+            <button @click="resetConfirmation.closeModal" class="cursor-pointer px-4 py-1 border-2 rounded-md border-red-400 text-red-400 ml-7.5 hover:bg-red-400 hover:text-gray-800 transition-all duration-300">Cancel</button>
+            <button @click="resetSessions" class="cursor-pointer px-4 py-1 border-2 rounded-md border-primary text-primary ml-5 hover:bg-primary hover:text-gray-800 transition-all duration-300">Confirm</button>
+          </div>  
+        </div>
+        </ConfirmationDialog>
+    </div>
       <div class="w-1/3 flex">
         <input v-model="search" placeholder="Search For Student" class="peer w-full placeholder:text-[#8e8e8e] text-lg py-2 px-4 pl-11.5 outline-none border-1 border-transparent bg-[#2e2e2e] transition-all duration-300 focus:border-primary rounded-md" type="text">
         <i class="pi pi-search absolute pt-3.75 pl-4 pointer-events-none transition-all duration-300 peer-focus:text-primary"></i>
@@ -228,7 +277,7 @@ ChartJS.register(ArcElement)
             leave-to="opacity-0 scale-95"
           >
             <DialogPanel
-              class="text-lg flex justify-center items-center w-225 h-150 bg-[#2e2e2e] transform overflow-hidden rounded-2xl p-6 text-left align-middle shadow-xl transition-all"
+              class="text-lg flex justify-center items-center w-250 h-150 bg-[#2e2e2e] transform overflow-hidden rounded-2xl p-6 text-left align-middle shadow-xl transition-all"
             >
               <div
                 class="flex flex-col items-center w-1/2 h-[calc(100%-10px)] border-r-2 border-[#202020]"
@@ -272,9 +321,21 @@ ChartJS.register(ArcElement)
               <div
                 class="flex items-center flex-col w-1/2 h-[calc(100%-10px)] border-l-2 border-[#202020]"
               >
-                <div class="flex mb-2 w-[85%]">
+                <div class="flex mb-2 w-[85%] ">
                   <h1 class="text-2xl font-bold">REMAINING SESSIONS</h1>
+                  <button tabindex="-1" @click="()=>resetStudentConfirmation.isOpen = true" class="focus:outline-none text-sm border-1 border-primary text-primary ml-4 px-2 py-1 rounded-md cursor-pointer hover:bg-primary hover:text-gray-800 transition-all duration-300">Reset Sessions</button>
                 </div>
+                <ConfirmationDialog :isOpen="resetStudentConfirmation.isOpen" :closeModal="resetStudentConfirmation.closeModal"
+                  class="text-lg flex flex-col items-center w-150 h-45 bg-[#2e2e2e] transform overflow-hidden rounded-2xl p-8 text-left align-middle shadow-xl transition-all"
+                  >
+                  <div>
+                    <p class="text-2xl font-bold">Are you sure you want to reset all sessions?</p>
+                    <div class="flex justify-end mt-10">
+                      <button @click="resetStudentConfirmation.closeModal" class="cursor-pointer px-4 py-1 border-2 rounded-md border-red-400 text-red-400 ml-7.5 hover:bg-red-400 hover:text-gray-800 transition-all duration-300">Cancel</button>
+                      <button @click="resetStudentSessions" class="cursor-pointer px-4 py-1 border-2 rounded-md border-primary text-primary ml-5 hover:bg-primary hover:text-gray-800 transition-all duration-300">Confirm</button>
+                    </div>
+                  </div>  
+                </ConfirmationDialog>
                 <div class="flex w-[85%] mt-5">
                   <div class="flex flex-col h-40 justify-center items-center">
                     <div class="size-40 z-10">
@@ -294,12 +355,27 @@ ChartJS.register(ArcElement)
                 </div>
                 <div class="w-[85%] h-[4px] mt-7.5 bg-[#1f1f1f]"></div>
                 <div class="w-[85%] flex flex-col gap-5 mt-7.5">
-                  <Input
-                    placeholder="Purpose"
-                    v-model="state.sitin_purpose"
-                    type="text"
-                    class="w-full my-3"
-                  />
+                  <div class="w-full h-10 relative mt-[1px]">
+                    <select
+                      v-model="state.sitin_purpose"
+                      name="purpose"
+                      class="h-full my-[calc(var(--spacing)*2.28)] px-2 w-full outline-none placeholder:text-[#8e8e8e]"
+                    >
+                      <option
+                        v-for="purpose in purposes.slice(1)"
+                        :key="purpose"
+                        :value="purpose"
+                        class="text-[#f8f8f8] bg-[#181818] outline-none"
+                      >
+                        {{ purpose }}
+                      </option>
+                    </select>
+                    <div
+                      class="absolute top-0 w-full h-full pb-7.75 pt-4.75 border-b-2 border-[#3e3e3e] px-2 text-[#8e8e8e] pointer-events-none"
+                    >
+                      {{ state.sitin_purpose ? '' : 'Purpose' }}
+                    </div>
+                  </div>
 
                   <div class="w-full h-10 relative mt-[1px]">
                     <select
@@ -308,12 +384,12 @@ ChartJS.register(ArcElement)
                       class="h-full my-[calc(var(--spacing)*2.28)] px-2 w-full outline-none placeholder:text-[#8e8e8e]"
                     >
                       <option
-                        v-for="laboratory in laboratories"
+                        v-for="laboratory in laboratories.slice(1)"
                         :key="laboratory"
                         :value="laboratory"
                         class="text-[#f8f8f8] bg-[#181818] outline-none"
                       >
-                        {{ laboratory }}
+                        {{ 'Lab ' + laboratory }}
                       </option>
                     </select>
                     <div

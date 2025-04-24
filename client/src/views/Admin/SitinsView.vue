@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import SitinCard from '@/components/SitinCard.vue'
-import { getCurrentSitin, logoutSitin } from '@/api/sitin'
+import { getCurrentSitin, logoutSitin, addPoint, addSessionFromPoint } from '@/api/sitin'
 import AdminNavbar from '@/components/AdminNavbar.vue'
 import { toBase64 } from '@/library/base64'
 import type { CurrentSitin } from '@/types/Sitin'
@@ -10,6 +10,7 @@ import { getCurrentDate, setDate } from '@/library/date'
 import { errorToast, successToast } from '@/library/toast'
 
 const search = ref("")
+const pointChecked = ref(false)
 const currentStudentSitin = ref<CurrentSitin>({
   sitin_id: '',
   idno: '',
@@ -70,16 +71,33 @@ onBeforeMount(async () => {
     currentSitins.value = response.sitins
   }
 })
-
+const handleAddPoint = async () => {
+  const response = await addPoint(currentStudentSitin.value.sitin_id)
+  if (response.success) {
+    successToast('Point added successfully!')
+    await addSessionFromPoint(currentStudentSitin.value.idno)
+  } else {
+    errorToast('Error adding point!')
+  }
+}
 const handleLogoutSitin = async () => {
   const response = await logoutSitin(currentStudentSitin.value.sitin_id)
   if (response.success) {
+    
+    if (pointChecked.value) {
+      console.log('pointChecked', pointChecked.value)
+      await handleAddPoint()
+    }
     successToast('Student Sit-in logged out successfully!')
     currentSitins.value = currentSitins.value.filter((e) => e.sitin_id !== currentStudentSitin.value.sitin_id)
+    pointChecked.value = false
     closeModal()
   } else {
     errorToast('Error logging out student!')
   }
+}
+const handleCheckPoint = () => {
+  pointChecked.value = !pointChecked.value
 }
 </script>
 <template>
@@ -255,8 +273,17 @@ const handleLogoutSitin = async () => {
                     <p>TIME OUT</p>
                     <p>{{ currentTime }}</p>
                   </div>
+                  <div class="flex flex-row w-full justify-between my-1">
+                    <p>REWARD</p>
+                    <div class="flex flex-row w-1/3 justify-end my-1">
+                      <p class="mr-4">{{ pointChecked ? '1 POINT' : '0  POINT' }}</p>
+                      <i v-if="!pointChecked" @click="handleCheckPoint" class="pi pi-star cursor-pointer text-2xl" style="color: green"></i>
+                      <i v-else @click="handleCheckPoint" class="pi pi-star-fill cursor-pointer text-2xl" style="color: green"></i>
+
+                    </div>
+                  </div>
                 </div>
-                <div class="w-[85%] mt-25">
+                <div class="w-[85%] mt-7.5">
                   <button
                     @click="handleLogoutSitin"
                     class="focus:outline-none w-full px-5 py-2 rounded text-[#ffff] font-semibold cursor-pointer text-lg bg-[#00BD7E] hover:bg-[#00BD7E]/65 transition-colors duration-400"
