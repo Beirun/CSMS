@@ -29,6 +29,15 @@ app.get("/current", async (req: Request, res : Response) => {
     }
 })
 
+app.post("/point/:id", async(req : Request, res : Response)=>{
+    const {id} = req.params;
+    try {
+        const result = await db.query("UPDATE sitin_history SET point = 1 WHERE sitin_id = $1 RETURNING *;",[id])
+        res.json({success: result.rowCount===1})
+    } catch (err: any) {
+        res.status(500).json({error: err.message})
+    }
+})
 app.post("/logout/:id", async(req : Request, res : Response)=>{
     const {id} = req.params;
     try {
@@ -79,5 +88,52 @@ app.post("/feedback", async (req : Request, res : Response) => {
         res.status(500).json({ error: err.message });
     }
 })
+
+app.post("/reset", async (req : Request, res : Response) => {
+    try {
+        const result = await db.query("UPDATE session SET sessions = 30;");
+        console.log(result)
+        res.json({success: true});
+    } catch (err : any) {
+        res.status(500).json({ error: err.message });
+    }
+})
+
+app.post("/reset/:idno", async (req : Request, res : Response) => {
+    const {idno} = req.params;
+    try {
+        const result = await db.query("UPDATE session SET sessions = 30 WHERE idno = $1;",[idno]);
+        res.json({success: result.rowCount===1});
+    } catch (err : any) {
+        res.status(500).json({ error: err.message });
+    }
+})
+
+app.get("/leaderboard", async (req : Request, res : Response) => {
+    try {
+        const result = await db.query("SELECT * FROM leaderboard;");
+        res.json({success: true, leaderboard: result.rows});
+    } catch (err : any) {
+        res.status(500).json({ error: err.message });
+    }
+})
+
+app.post("/point/idno/:idno", async (req : Request, res : Response) => {
+    const {idno} = req.params;
+    try {
+        // console.log('idno', idno)
+        const points = await db.query("SELECT points FROM leaderboard WHERE idno = $1;",[idno]);
+        // console.log(points)
+        // console.log(points.rows[0].points)
+        if(points.rows[0].points % 3 === 0){
+            await db.query("UPDATE session SET sessions = sessions + 1 WHERE idno = $1 RETURNING *;",[idno]);
+            res.json({success: true});
+        }else{
+            res.json({success: false});
+        }
+    } catch (err : any) {
+        res.status(500).json({ error: err.message });
+    }
+})  
 
 export default app
