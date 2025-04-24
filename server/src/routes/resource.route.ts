@@ -13,7 +13,6 @@ interface File {
   url: string;
 }
 let files : string[] = [];
-
 app.get("/", async (req: Request, res: Response) => {
   try {
     const isLocal = !!process.env.CHROME_EXECUTABLE_PATH;
@@ -150,4 +149,71 @@ app.get("/test", async (req: Request, res : Response) => {
     res.status(200).json({success: true})
 } )
 
+// TODO: Implement download route
+app.get("/download/:id", async(req : Request, res: Response) => {
+    const { id } = req.params;
+    
+    if( +id >= files.length || +id < 0) {
+        res.status(400).json({success: false, error: "Invalid file ID"})
+        return;
+    }
+    try {
+        const isLocal = !!process.env.CHROME_EXECUTABLE_PATH;
+
+        const browser = await puppeteer.launch({
+            args: chromium.args,
+            defaultViewport: chromium.defaultViewport,
+            executablePath:
+                process.env.CHROME_EXECUTABLE_PATH || (await chromium.executablePath()),
+            headless: chromium.headless,
+        });
+
+        const page = await browser.newPage();
+        await page.setRequestInterception(true);
+        let url = "";
+        
+        // Listen for download requests
+        page.on('request', (request: any) => {
+            if (request.url().includes('export=download') || 
+                request.url().includes('uc?id=') ||
+                request.url().includes('confirm=')) {
+                // We'll associate URLs with files later
+                url = request.url();
+                request.abort(); // Prevent actual download
+            } else {
+                request.continue();
+            }
+        });
+        
+        // TODO: Implement the rest of the download functionality
+        await page.goto(
+            "https://drive.google.com/drive/folders/1eekEms2ZXPxfNuIulTRHd9lHk9tgqFIg",
+            { waitUntil: 'networkidle2' }
+        );
+        
+        await page.waitForSelector(".akerZd");
+
+        const fileElements = await page.$$('.akerZd');
+
+        await fileElements[+id].click();
+        
+        await new Promise(r => setTimeout(r, 2000));
+
+        // Close any dialog that might have opened
+        await page.keyboard.press('Escape');
+        await new Promise(r => setTimeout(r, 250));
+
+        res.status(200).json({
+            success: true,
+            url: url
+        });
+        
+        await browser.close();
+    } catch (err: any) {
+        res.status(500).json({ 
+            success: false, 
+            error: err.message 
+        });
+    }
+})
 export default app;
