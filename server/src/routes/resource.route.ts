@@ -187,7 +187,7 @@ app.get("/download/:id", async(req : Request, res: Response) => {
         
         // TODO: Implement the rest of the download functionality
         await page.goto(
-            "https://drive.google.com/drive/folders/1eekEms2ZXPxfNuIulTRHd9lHk9tgqFIg",
+            process.env.GOOGLE_DRIVE_LINK as string,
             { waitUntil: 'networkidle2' }
         );
         
