@@ -14,6 +14,7 @@ import CreateAnnouncementView from '@/views/Admin/CreateAnnouncementView.vue';
 import SitinRecordsView from '@/views/Admin/SitinRecordsView.vue';
 import FeedbackView from '@/views/Admin/FeedbackView.vue';
 import AdminDashboardView from '@/views/Admin/DashboardView.vue';
+import LabResourcesView from '@/views/Admin/LabResourcesView.vue';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -91,6 +92,11 @@ const router = createRouter({
       path: '/feedbacks',
       name: 'feedbacks',
       component: FeedbackView
+    },
+    {
+      path: '/resources',
+      name: 'resources',
+      component: LabResourcesView
     }
   ],
 })

@@ -12,6 +12,7 @@
         <RouterLink to="/dashboard/admin">Dashboard</RouterLink>
         <RouterLink to="/announce">Announcement</RouterLink>
         <RouterLink to="/students">Students</RouterLink>
+        <RouterLink to="/resources">Resources</RouterLink>
         <RouterLink to="/sitins">Sit-ins</RouterLink>
         <RouterLink to="/records">Records</RouterLink>
         <RouterLink to="/feedbacks">Feedbacks</RouterLink>
