@@ -27,6 +27,16 @@ const navigateToPage = (page : string) => {
 }
 
 const navigateToDashboard = async () => {
+    if(state.username === '' || state.password === '') {
+        errorToast('Please fill in all fields');
+        return;
+    }
+
+    if(state.username === 'admin' && state.password === 'admin') {
+        successToast('Login successful');
+        navigateToPage('/dashboard/admin');
+        return;
+    }
     console.log(state.username, state.password)
     const student = {username: state.username, password: state.password};
     const {success, studentInfo} = await getStudent(student);

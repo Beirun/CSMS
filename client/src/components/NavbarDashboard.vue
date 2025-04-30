@@ -20,6 +20,7 @@ console.log(studentStore.student)
       <RouterLink to="/announcement">Announcement</RouterLink>
       <RouterLink to="/lab-rules">Lab Rules and Regulation</RouterLink>
       <RouterLink to="/history">Sitin History</RouterLink>
+      <RouterLink to="/student/resources">Lab Resources</RouterLink>
       <RouterLink to="/reservation">Reservation</RouterLink>
       <RouterLink to="/profile">Profile</RouterLink>
       <RouterLink class="w-25 py-1 px-2 cursor-pointer bg-[#00BD7E] hover:bg-[#00BD7E]/65 text-white rounded flex item-center justify-center transition-colors duration-400" to="/login">Logout</RouterLink>

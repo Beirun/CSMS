@@ -15,6 +15,9 @@ import SitinRecordsView from '@/views/Admin/SitinRecordsView.vue';
 import FeedbackView from '@/views/Admin/FeedbackView.vue';
 import AdminDashboardView from '@/views/Admin/DashboardView.vue';
 import LabResourcesView from '@/views/Admin/LabResourcesView.vue';
+import LeaderboardView from '@/views/Admin/LeaderboardView.vue';
+import StudentLabResourcesView from '@/views/User/LabResourcesView.vue';
+import StudentReservationView from '@/views/User/ReservationView.vue';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -97,6 +100,21 @@ const router = createRouter({
       path: '/resources',
       name: 'resources',
       component: LabResourcesView
+    },
+    {
+      path: '/leaderboard',
+      name: 'leaderboard',
+      component: LeaderboardView
+    },
+    {
+      path: '/student/resources',
+      name : 'student-resources',
+      component: StudentLabResourcesView
+    },
+    {
+      path: '/reservations',
+      name: 'reservations',
+      component: StudentReservationView
     }
   ],
 })

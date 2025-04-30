@@ -78,53 +78,7 @@ const downloadFile = async (index: number) => {
   <div class="flex flex-col items-center justify-center min-h-screen w-screen text-white pt-25 gap-10 px-10">
     <div class="w-full flex justify-between items-center">
       <h1 class="text-4xl font-bold w-full">Lab Resources</h1>
-      <button @click="uploadDialog.isOpen = true"
-        class="bg-primary rounded-md w-50 p-4 text-xl font-semibold hover:bg-primary/70 text-[#2e2e2e] transition-all duration-300 cursor-pointer">
-        <i class="pi pi-plus text-lg font-bold"></i> Upload File
-      </button>
-      <Dialog :isOpen="uploadDialog.isOpen" :closeModal="uploadDialog.closeModal"
-        class="bg-[#2e2e2e] w-170 h-1/3 rounded-lg shadow-md shadow-black flex flex-col items-center justify-center"
-        >
-        <div class="p-4 w-170 h-120 flex flex-col items-center justify-center"
-          :class="{'opacity-50 pointer-events-none': isUploading}"
-          >
-          <div v-if="isUploading" class="absolute inset-0 bg-black opacity-50 flex items-center justify-center">
-            <h2 class="text-white text-2xl font-bold">Uploading...</h2>
-          </div>
-        
-          <h1 class="text-2xl font-bold mb-10">Upload File</h1>
-          <div class="flex items-center justify-center w-full">
-            <label for="dropzone-file"
-              class="transition-all duration-300 flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-              <div v-if="uploadFile" class="mb-4 text-4xl font-bold text-gray-500 dark:text-gray-400 ">
-                  <i class="pi pi-file text-4xl "></i><span class="pl-4">{{ uploadFile.name }}</span>
-
-                </div>
-              <div v-else class="flex flex-col items-center justify-center pt-5 pb-6">
-                
-                <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
-                </svg>
-                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                  <span class="font-semibold">Click to upload</span> or drag and drop
-                </p>
-                <!-- <p class="text-xs text-gray-500 dark:text-gray-400">
-                  SVG, PNG, JPG or GIF (MAX. 800x400px)
-                </p> -->
-              </div>
-              <input @change="handleFileChange" id="dropzone-file" type="file" class="hidden" />
-            </label>
-          </div>
-          <div class="flex items-center justify-center w-full mt-10">
-            <button @click="handleUploadFile"
-              class="bg-[#00BD7E] rounded-md w-full p-4 text-xl font-semibold hover:bg-[#00BD7E]/70 text-[#2e2e2e] transition-all duration-300 cursor-pointer">
-              Upload
-            </button>
-          </div>
-        </div>
-      </Dialog>
+      
     </div>
     <div class="min-h-[75vh] mb-8 bg-[#222222] w-full rounded-xl shadow-md shadow-black flex flex-wrap justify-evenly">
       <div v-if="!loaded" class="m-8" v-for="index in 12" :key="index">
