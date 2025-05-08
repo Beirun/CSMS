@@ -3,16 +3,20 @@ import cors from "cors";
 import studentRoute from "./routes/student.route";
 import sitinRoute from "./routes/sitin.route";
 import announcementRoute from "./routes/announcement.route";
-import resources from "./routes/resource.route";
+import resourcesRoute from "./routes/resource.route";
+import schedulesRoute from "./routes/schedules.route";
+import fileUpload from "express-fileupload";
 const app = express();
 
+app.use(fileUpload())
 app.use(cors());
 app.use(express.json());
 
 app.use("/student", studentRoute);
 app.use("/sitin", sitinRoute);
 app.use("/announcement", announcementRoute);
-app.use("/resource", resources);
+app.use("/resource", resourcesRoute);
+app.use("/schedules", schedulesRoute);
 
 
 app.listen(3000, () => {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AdminNavbar from '@/components/AdminNavbar.vue'
+import AdminNavbar from '@/components/AdminSidebar.vue'
 import { computed, onBeforeMount, ref, reactive } from 'vue'
 import { getSitins } from '@/api/sitin'
 import { setDate } from '@/library/date'
@@ -104,9 +104,8 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <AdminNavbar />
-  <div class="flex w-full h-20 flex-col">
-    <div class="flex justify-between items-center w-full px-35 pt-35">
+  <div class="flex max-w-screen h-20 flex-col">
+    <div class="flex justify-between items-center w-full px-10 pt-20">
       <div class="text-5xl font-bold text-[#f8f8f8]">Sit-in Records</div>
       <div class="flex gap-5">
 
@@ -126,8 +125,8 @@ onBeforeMount(async () => {
     <!-- <div class="h-[1px] w-[calc(100%-280px)] bg-[#f8] my-6 mx-auto">&nbsp;</div> -->
   </div>
 
-  <div class="flex flex-row items-start justify-center h-screen w-screen pt-40">
-    <div class="flex flex-col w-[85%]">
+  <div class="flex flex-row items-start justify-center h-screen max-w-screen py-30 pl-10">
+    <div class="flex flex-col w-full pb-10">
       <div class="-m-1.5 overflow-x-auto">
         <div class="p-1.5 min-w-full inline-block align-middle">
           <div class="overflow-hidden">

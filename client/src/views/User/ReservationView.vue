@@ -1,13 +1,12 @@
 <template>
-    <div class="min-h-screen bg-[#181818] text-gray-200">
-      <NavbarDashboard />
-      <div class="p-6 pt-24">
+    <div class="max-w-screen min-h-screen bg-[#181818] text-gray-200 pt-20">
+      <div class="p-6 ml-10">
         <div class="flex flex-col items-center">
           <!-- Header -->
           <div class="w-[80vw] flex justify-between items-center mb-8">
             <div class="flex items-center gap-4">
               <h1 class="text-3xl font-bold">Reservations</h1>
-              <Button @click="isDialogOpen = true">
+              <Button @click="isDialogOpen = true" class="bg-[#00BD7E] hover:bg-[#00BD7E]/90 flex items-center">
                 <PlusIcon class="h-4 w-4 mr-2" />
                 Add New
               </Button>
@@ -139,49 +138,49 @@
 
           <!-- Laboratory Dropdown with HoverCard for PCs -->
           <div class="w-[45%]">
-            <Label class="text-gray-300 pb-2">Laboratory & PC</Label>
-            <Select v-model="newReservation.laboratory" :open="laboratoryDropdownOpen" @update:open="handleDropdownOpen">
-              <SelectTrigger class="bg-[#333]  cursor-pointer border-[#444] text-gray-200 w-full">
-                <SelectValue placeholder="Select laboratory" />
-              </SelectTrigger>
-              <SelectContent class="bg-[#333] border-[#444] text-gray-200">
-                <SelectGroup>
-                  <SelectLabel>Laboratories</SelectLabel>
-                  <div v-for="lab in laboratories" :key="lab.name">
-                    <HoverCard open-delay="0" :close-delay="100">
-                      <HoverCardTrigger as-child>
-                        <div class="w-full px-2 py-1.5 text-sm hover:bg-[#444] cursor-default transition-colors duration-100">
-                          <span>{{ lab.name }}</span>
-                        </div>
-                      </HoverCardTrigger>
-                      <HoverCardContent 
-                        class="w-auto p-2 bg-[#333] border-[#444] text-gray-200 transition-opacity duration-100"
-                        side="right"
-                        align="start"
-                      >
-                        <div class="grid grid-cols-3 gap-2">
-                          <Button
-                            v-for="pc in lab.pcs"
-                            :key="pc"
-                            variant="ghost"
-                            class="h-8 w-12 p-0 text-xs hover:bg-[#444] transition-colors duration-100"
-                            @click="selectPC(lab.name, pc)"
-                          >
-                            {{ pc }}
-                          </Button>
-                        </div>
-                      </HoverCardContent>
-                    </HoverCard>
-                  </div>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <div class="mt-2 text-sm text-gray-300 h-10">
-              <div v-if="newReservation.pcno">
-                Selected PC: <span class="font-medium">{{ newReservation.pcno }}</span>
-              </div>
-            </div>
+    <Label class="text-gray-300 pb-2">Laboratory & PC</Label>
+    <Select v-model="newReservation.laboratory" :open="laboratoryDropdownOpen" @update:open="handleDropdownOpen">
+      <SelectTrigger class="bg-[#333] cursor-pointer border-[#444] text-gray-200 w-full">
+        <SelectValue :placeholder="labph" />
+      </SelectTrigger>
+      <SelectContent class="bg-[#333] border-[#444] text-gray-200">
+        <SelectGroup>
+          <SelectLabel>Laboratories</SelectLabel>
+          <div v-for="lab in laboratories" :key="lab.name">
+            <HoverCard :open-delay="0" :close-delay="100">
+              <HoverCardTrigger as-child>
+                <div :value="lab.name" class=" w-full px-2 py-1.5 text-sm hover:bg-[#444] cursor-default transition-colors duration-100">
+                  <span>{{ lab.name }}</span>
+                </div>
+              </HoverCardTrigger>
+              <HoverCardContent 
+                class="w-auto p-2 bg-[#333] border-[#444] text-gray-200 transition-opacity duration-100"
+                side="right"
+                align="start"
+              >
+                <div class="grid grid-cols-3 gap-2">
+                  <Button
+                    v-for="pc in lab.pcs"
+                    :key="pc"
+                    variant="ghost"
+                    class="h-8 w-12 p-0 text-xs hover:bg-[#444] transition-colors duration-100"
+                    @click="selectPC(lab.name, pc)"
+                  >
+                    {{ pc }}
+                  </Button>
+                </div>
+              </HoverCardContent>
+            </HoverCard>
           </div>
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+    <div class="mt-2 text-sm text-gray-300 h-10">
+      <div v-if="newReservation.pcno">
+        <i class="pi pi-desktop text-md px-4"></i><span class="font-medium">PC {{ newReservation.pcno }}</span>
+      </div>
+    </div>
+  </div>
         </div>
 
         <!-- Date and Time in same line -->
@@ -195,12 +194,12 @@
                   class="w-full justify-start text-left font-normal bg-[#222] border-1 border-[#444444] hover:bg-[#333] text-gray-200"
                 >
                   <CalendarIcon class="mr-2 h-4 w-4" />
-                  <span>{{ newReservation.date ? formatDate(newReservation.date) : 'Pick a date' }}</span>
+                  <span>{{ newReservation.date ? formatDate(newReservation.date.toString()) : 'Pick a date' }}</span>
                 </Button>
               </PopoverTrigger>
               <PopoverContent class="w-auto p-0 bg-[#333] border-[#444]">
                 <Calendar
-                  v-model="newReservation.date"
+                  v-model="newReservation.date as DateValue"
                   mode="single"
                   initial-focus
                   class="text-gray-200"
@@ -250,9 +249,9 @@
     </div>
   </template>
   
-  <script setup>
+  <script setup lang="ts">
   import { ref, computed } from 'vue'
-  import NavbarDashboard from '@/components/NavbarDashboard.vue'
+  import NavbarDashboard from '@/components/StudentSidebar.vue'
   import { PlusIcon, ChevronRightIcon, CalendarIcon } from 'lucide-vue-next'
   import {
     Dialog,
@@ -277,6 +276,7 @@
   import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
   import { Calendar } from '@/components/ui/calendar'
   import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import type { DateValue } from 'reka-ui'
   
   // Current student data (replace with your actual auth data)
   const currentStudent = ref({
@@ -285,6 +285,7 @@
     remainingSessions: 5
   })
   
+  const labph = ref("Select laboratory")
   // Dialog state
   const isDialogOpen = ref(false)
   
@@ -293,7 +294,7 @@
     purpose: '',
     laboratory: '',
     pcno: '',
-    date: '',
+    date: undefined as DateValue | undefined,
     time: ''
   })
   
@@ -335,14 +336,15 @@
 const hoveredLab = ref(null)
 
 // Modified selectPC function
-function selectPC(labName, pc) {
+function selectPC(labName : string, pc :string) {
   newReservation.value.laboratory = labName
   newReservation.value.pcno = pc
   laboratoryDropdownOpen.value = false
+  labph.value = labName
 }
 
 // Handle dropdown open state
-function handleDropdownOpen(open) {
+function handleDropdownOpen(open : boolean) {
   if (!open ) {
     // Don't allow closing if no PC is selected
     laboratoryDropdownOpen.value = !laboratoryDropdownOpen.value
@@ -352,7 +354,7 @@ function handleDropdownOpen(open) {
 }
   
   // Format date for display
-  function formatDate(date) {
+  function formatDate(date : string) {
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -360,10 +362,7 @@ function handleDropdownOpen(open) {
     })
   }
   
-  // Disable past dates
-  function isDateDisabled(date) {
-    return date < new Date(new Date().setHours(0, 0, 0, 0))
-  }
+ 
   
   // Submit function
   function submitReservation() {
@@ -379,7 +378,7 @@ function handleDropdownOpen(open) {
       purpose: '',
       laboratory: '',
       pcno: '',
-      date: '',
+      date: undefined,
       time: ''
     }
   }
@@ -440,7 +439,7 @@ function handleDropdownOpen(open) {
   })
   
   // Methods
-  function formatTime(dateString) {
+  function formatTime(dateString : string) {
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', { 
       year: 'numeric', 

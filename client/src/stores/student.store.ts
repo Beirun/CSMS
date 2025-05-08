@@ -1,8 +1,10 @@
 import { defineStore } from "pinia";
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 
 export const useStudentStore = defineStore("student",() => {
-
+    const user = reactive({
+        type: 'none',
+    })
     const student = reactive({
         idno: '',
         firstname: '',
@@ -16,7 +18,10 @@ export const useStudentStore = defineStore("student",() => {
         sessions: '',
         poke_icon: '',
     })
-
+    function setUser(type: string) {
+        console.log("type", type);
+        user.type = type;
+    }
     function setStudent(studentInfo: any) {
         student.idno = studentInfo.idno;
         student.firstname = studentInfo.firstname;
@@ -31,6 +36,6 @@ export const useStudentStore = defineStore("student",() => {
         student.poke_icon = studentInfo.poke_icon;
 
     }
-    return { student, setStudent };
+    return { student, setStudent, user, setUser };
     
 },{persist: true});

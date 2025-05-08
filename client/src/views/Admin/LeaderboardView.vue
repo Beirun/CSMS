@@ -1,5 +1,4 @@
 <template>
-    <AdminNavbar />
     <div class="min-h-screen bg-[#181818] text-white p-6 pt-25">
         <div class="max-w-6xl mx-auto ">
             <h1 class="text-4xl font-bold mb-8 text-center text-[#00BD7E]">Leaderboard</h1>
@@ -153,7 +152,7 @@
 import { ref } from 'vue';
 import { onBeforeMount } from 'vue';
 //   import { UserIcon } from '@heroicons/vue/outline';
-import AdminNavbar from '@/components/AdminNavbar.vue';
+import AdminNavbar from '@/components/AdminSidebar.vue';
 import { getLeaderboard } from '@/api/sitin';
 import type { Leaderboard } from '@/types/Leaderboard';
 import { toBase64 } from '@/library/base64'; // Assuming you have a utility function to convert to base64

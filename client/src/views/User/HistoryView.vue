@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import NavbarDashboard from '@/components/NavbarDashboard.vue';
+import NavbarDashboard from '@/components/StudentSidebar.vue';
 import { onBeforeMount, reactive, ref } from 'vue'
 import { getSitinsByStudent } from '@/api/sitin'
 import { setDate } from '@/library/date'
@@ -53,9 +53,12 @@ const handleSubmitFeedback = async () => {
 }
 </script>
 <template>
-    <NavbarDashboard/>
-    <div class="flex flex-row items-start justify-center h-screen w-screen pt-40">
+    <div class="flex flex-row items-start justify-center min-h-screen max-w-screen pt-20">
+      
     <div class="flex flex-col w-[85%]">
+      <div class="font-bold text-gray-100 text-4xl py-5 ">
+        Sitin History
+      </div>
       <div class="-m-1.5 overflow-x-auto">
         <div class="p-1.5 min-w-full inline-block align-middle">
           <div class="overflow-hidden">

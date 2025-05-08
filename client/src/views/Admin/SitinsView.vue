@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import SitinCard from '@/components/SitinCard.vue'
 import { getCurrentSitin, logoutSitin, addPoint, addSessionFromPoint } from '@/api/sitin'
-import AdminNavbar from '@/components/AdminNavbar.vue'
+import AdminNavbar from '@/components/AdminSidebar.vue'
 import { toBase64 } from '@/library/base64'
 import type { CurrentSitin } from '@/types/Sitin'
 import { computed, onBeforeMount, ref } from 'vue'
@@ -101,9 +101,8 @@ const handleCheckPoint = () => {
 }
 </script>
 <template>
-    <AdminNavbar/>
 
-  <div class="items-center justify-start min-h-screen w-screen flex flex-col pt-10">
+  <div class="items-center justify-start min-h-screen max-w-screen flex flex-col pt-10">
     <div class="w-full flex justify-between px-25 mt-25 mb-20">
       <p class="font-bold text-5xl">CURRENT SITINS</p>
       <div class="w-1/3 flex">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AdminNavbar from '@/components/AdminNavbar.vue'
+import AdminNavbar from '@/components/AdminSidebar.vue'
 import { onBeforeMount, ref } from 'vue'
 import { getSitinFeedbacks } from '@/api/feedback'
 import { setDate } from '@/library/date'
@@ -15,9 +15,12 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <AdminNavbar />
-  <div class="flex flex-row items-start justify-center h-screen w-screen pt-40">
+  <div class="flex flex-row items-start justify-center h-screen max-w-screen pt-10">
+    
     <div class="flex flex-col w-[90%]">
+      <div class="w-full flex justify-between items-center py-10">
+        <h1 class="text-4xl font-bold w-full">Lab Resources</h1>
+        </div>
       <div class="-m-1.5 overflow-x-auto">
         <div class="p-1.5 min-w-full inline-block align-middle">
           <div class="overflow-hidden">

@@ -2,7 +2,7 @@
 import { onBeforeMount, reactive } from 'vue'
 import { ref } from 'vue'
 import { getDownloadUrl, getFiles } from '@/api/resource'
-import AdminNavbar from '@/components/AdminNavbar.vue'
+import AdminNavbar from '@/components/AdminSidebar.vue'
 import Dialog from '@/components/ConfirmationDialog.vue'
 import { uploadFileApi } from '@/api/resource'
 const uploadDialog = reactive({
@@ -74,8 +74,7 @@ const downloadFile = async (index: number) => {
 </script>
 
 <template>
-  <AdminNavbar />
-  <div class="flex flex-col items-center justify-center min-h-screen w-screen text-white pt-25 gap-10 px-10">
+  <div class="flex flex-col items-center justify-center min-h-screen max-w-screen text-white pt-10 gap-10 px-10">
     <div class="w-full flex justify-between items-center">
       <h1 class="text-4xl font-bold w-full">Lab Resources</h1>
       <button @click="uploadDialog.isOpen = true"

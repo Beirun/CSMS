@@ -108,50 +108,8 @@ const handleChangePassword = () => {
 </script>
 
 <template>
-  <!-- <div class="w-[70%] h-[80%] mt-20 flex justify-center items-center bg-[#202020] rounded-lg shadow-md shadow-[#101010]">
-    <div class="w-1/2 h-full border-r border-[#2a2a2a] flex justify-center items-center flex-col">
-        <img src="@/assets/default-profile.jpg" alt="" class="w-40 h-40 rounded-full">
-        <h1 class="text-lg">{{student.username}}</h1>
-        <h1 class="text-[#00BD7E] text-2xl">{{student.firstname}} {{student.middlename}} {{student.lastname}}</h1>
-    </div>
-    <div class="w-1/2 h-full flex justify-center items-center flex-col">
-        <div class="flex justify-between w-5/7">
-            <Input placeholder="First Name" v-model="profileInfo.firstname" type="text" class="w-[30%] my-3"/>
-            <Input placeholder="Middle Name" v-model="profileInfo.middlename" type="text" class="w-[32.5%] my-3"/>
-            <Input placeholder="Last Name" v-model="profileInfo.lastname" type="text" class="w-[27.5%] my-3"/>
-            
-        </div>
-        <Input placeholder="Email Address" v-model="profileInfo.email" type="text" class="w-5/7 my-3"/>
-        
-        <div class="flex justify-between w-5/7">
-            <Input placeholder="IDNO" v-model="profileInfo.idno" type="text" class="w-[25%] my-3"/>
-            <div class="w-[25.7%] h-10 relative mt-[1px]">
-                <select v-model="profileInfo.course" name="course" class="h-full my-[calc(var(--spacing)*2.28)] px-2 w-full  outline-none placeholder:text-[#8e8e8e]">
-                    <option v-for="course in courses" :key="course" :value="course" class="text-[#f8f8f8] bg-[#181818] outline-none">{{ course }}</option>
-                </select>
-                <div class="absolute top-0 w-full h-full pb-7.75 pt-4.75 border-b-2 border-[#3e3e3e] px-2 text-[#8e8e8e] pointer-events-none">{{ profileInfo.course ? "" : "Course" }}</div>
-            </div>
-            
-            <div class="w-[32.5%] h-10 relative mt-[1px] ">
-                
-                <select v-model="profileInfo.yearlevel" name="year level" class="h-full my-[calc(var(--spacing)*2.28)] px-2 w-full outline-none placeholder:text-[#8e8e8e]">
-                    <option v-for="yearLevel in yearLevels" :key="yearLevel" :value="yearLevel" class="text-[#f8f8f8] bg-[#181818] outline-none">{{ yearLevel }}</option>
-                </select>
-                    <div class="absolute top-0 w-full h-full pb-7.75 pt-4.75 border-b-2 border-[#3e3e3e] px-2 text-[#8e8e8e] pointer-events-none">{{ profileInfo.yearlevel ? "" : "Year Level" }}</div>
-                </div>
-            </div>
-            <Input placeholder="Username" v-model="profileInfo.username" type="text" class="w-5/7 my-3"/>
-            
-            <div class="flex justify-between w-5/7">
-                <Input placeholder="Password" v-model="profileInfo.password" type="password" class="w-full my-3"/>
-                
-            </div>
-            <button @click="updateProfile" class="w-5/7 mt-10 px-5 py-2 rounded text-[#ffff] font-semibold cursor-pointer text-lg bg-[#00BD7E] hover:bg-[#00BD7E]/65 transition-colors duration-400">CHANGE</button>
-            
-        </div>
-    </div> -->
 
-  <div class="h-screen w-screen pt-20 flex flex-col items-center">
+  <div class="h-screen max-w-screen pt-20 flex flex-col ">
     <div class="w-[calc(90%)] h-[200px]">
       <div
         class="w-full h-full bg-[url('../assets/cover.png')] bg-center rounded-lg shadow-md shadow-[#181818]"

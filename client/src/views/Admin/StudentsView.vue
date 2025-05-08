@@ -3,7 +3,7 @@ import StudentCard from '@/components/StudentCard.vue'
 import { ref, computed, reactive, onBeforeMount } from 'vue'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
 import { Chart as ChartJS, ArcElement } from 'chart.js'
-import AdminNavbar from '@/components/AdminNavbar.vue'
+import AdminNavbar from '@/components/AdminSidebar.vue'
 import { Doughnut } from 'vue-chartjs'
 import Input from '@/components/ui/TextField.vue'
 import { getStudents } from '@/api/student'
@@ -210,9 +210,8 @@ ChartJS.register(ArcElement)
 </script>
 
 <template>
-    <AdminNavbar/>
 
-  <div class="items-center justify-center min-h-screen w-screen pt-10">
+  <div class="items-center justify-center min-h-screen max-w-screen pt-10">
     <div class="w-full flex justify-between px-25 mt-25 mb-20">
       <div class="flex">
         <p class="font-bold text-5xl">STUDENTS</p>

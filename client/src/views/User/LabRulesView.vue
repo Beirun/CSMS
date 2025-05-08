@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import NavbarDashboard from '@/components/NavbarDashboard.vue';
+import NavbarDashboard from '@/components/StudentSidebar.vue';
 </script>
 <template>
-    <NavbarDashboard/>
-    <div class="flex flex-col items-center justify-center h-screen w-screen text-white pt-30 gap-5">
+    <div class="flex flex-col items-center justify-center h-screen max-w-screen text-white  gap-5">
 
-        <div class="flex flex-col items-center  w-1/2 text-2xl">
+        <div class="flex flex-col items-center  w-3/4 text-2xl pr-50 py-10">
         <div>UNIVERSITY OF CEBU</div>
         <div>COLLEGE OF INFORMATION AND COMPUTER STUDIES</div>
         <div>LABORATORY RULES AND REGULATIONS</div>
       </div>
-      <div class=" flex flex-col w-1/2 overflow-scroll text-justify gap-5 font-montserrat">
+      <div class=" flex flex-col w-3/4 overflow-scroll text-justify gap-5 font-montserrat">
           <div>
             To avoid embarrassment and maintain camaraderie with your friends and superiors at our
             laboratories, please observe the following:

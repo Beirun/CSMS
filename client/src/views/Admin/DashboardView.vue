@@ -2,22 +2,15 @@
 import { onBeforeMount } from 'vue';
 import { getAnnouncements } from '@/api/announcement'
 import { ref } from 'vue'
-import AdminNavbar from '@/components/AdminNavbar.vue';
+import AdminNavbar from '@/components/AdminSidebar.vue';
 import type { Announcement } from '@/types/Announcement'
 import { setDate } from '@/library/date'
 
-const announcements = ref<Announcement[]>([])
-const loaded = ref(false)
-onBeforeMount(async () => {
-  const response = await getAnnouncements()
-  announcements.value = response.announcements;
-  loaded.value = true
-})
+
 </script>
 
 <template>
-    <AdminNavbar/>
-    <div class="flex flex-col items-center justify-center h-screen w-screen text-white pt-25 gap-10 px-10">
+    <div class="flex flex-col items-center justify-center h-screen max-w-screen text-white pt-10 gap-10 px-10">
       <div class="flex items-center justify-center w-full h-1/2 gap-10">
         <div class="flex w-3/4 h-full bg-red-500">
 

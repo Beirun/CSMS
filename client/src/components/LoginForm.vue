@@ -35,6 +35,11 @@ const navigateToDashboard = async () => {
     if(state.username === 'admin' && state.password === 'admin') {
         successToast('Login successful');
         navigateToPage('/dashboard/admin');
+        
+        setTimeout(() => {
+            studentStore.setUser("admin")
+    },500)
+        console.log(studentStore.user.type)
         return;
     }
     console.log(state.username, state.password)
@@ -46,8 +51,13 @@ const navigateToDashboard = async () => {
         return;
     }
     successToast('Login successful');
-    studentStore.setStudent(studentInfo);
+    
     navigateToPage('/dashboard');
+    studentStore.setStudent(studentInfo);
+    setTimeout(() => {
+        studentStore.setUser("student")
+    },500)
+    console.log(studentStore.user.type)
 }
 
 </script>
@@ -63,8 +73,8 @@ const navigateToDashboard = async () => {
     <div class="w-3/5 h-4/5 bg-[#202020] rounded-lg shadow-md shadow-[#101010] flex flex-row">
         <div class="w-1/2 h-full border-r border-[#2a2a2a] flex justify-center items-center flex-col">
             <h1 class="text-3xl mb-7 text-[#00BD7E] font-bold">LOGIN</h1>
-            <Input :keyPress="navigateToDashboard" placeholder="Username" v-model="state.username" type="text" class="w-5/7 my-3"/>
-            <Input :keyPress="navigateToDashboard" placeholder="Password" v-model="state.password" type="password" class="w-5/7 my-3"/>
+            <Input  placeholder="Username" v-model="state.username" type="text" class="w-5/7 my-3"/>
+            <Input  placeholder="Password" v-model="state.password" type="password" class="w-5/7 my-3"/>
             <button @click="navigateToDashboard" class="w-5/7 mt-10 px-5 py-2 rounded text-[#ffff] font-semibold cursor-pointer text-lg bg-[#00BD7E] hover:bg-[#00BD7E]/65 transition-colors duration-400">LOGIN</button>
             <div class="flex flex-row xl:flex-row lg:flex-col md:flex-col mt-10 sm:flex-col sm:item-center sm:justify-center">
                 <p class="text-lg text-[#8e8e8e] mr-1.5">Don't have an account?</p>

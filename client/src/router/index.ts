@@ -17,7 +17,8 @@ import AdminDashboardView from '@/views/Admin/DashboardView.vue';
 import LabResourcesView from '@/views/Admin/LabResourcesView.vue';
 import LeaderboardView from '@/views/Admin/LeaderboardView.vue';
 import StudentLabResourcesView from '@/views/User/LabResourcesView.vue';
-import StudentReservationView from '@/views/User/ReservationView.vue';
+import AdminReservationView from '@/views/Admin/ReservationsView.vue';
+import LabScheduleView from '@/views/Admin/LabScheduleView.vue';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -114,7 +115,12 @@ const router = createRouter({
     {
       path: '/reservations',
       name: 'reservations',
-      component: StudentReservationView
+      component: AdminReservationView
+    },
+    {
+      path: '/schedule',
+      name: 'schedule',
+      component: LabScheduleView
     }
   ],
 })

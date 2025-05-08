@@ -2,7 +2,7 @@
 import { onBeforeMount } from 'vue';
 import { getAnnouncements } from '@/api/announcement'
 import { ref } from 'vue'
-import NavbarDashboard from '@/components/NavbarDashboard.vue';
+import NavbarDashboard from '@/components/StudentSidebar.vue';
 import type { Announcement } from '@/types/Announcement'
 import { setDate } from '@/library/date'
 
@@ -16,8 +16,7 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-    <NavbarDashboard/>
-    <div class="flex flex-col items-center justify-center min-h-screen w-screen text-white pt-20">
+    <div class="flex flex-col items-center justify-center min-h-screen max-w-screen text-white pt-10">
       <p class="text-4xl font-bold py-20">ANNOUNCEMENTS</p>
       <div class="min-h-100 w-[85%] pb-15  flex items-center justify-center">
       <div v-if="announcements.length > 0" class="flex flex-col gap-25 py-5">

@@ -13,6 +13,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
+    "@types/express-fileupload": "^1.5.1",
     "@types/pg": "^8.11.11",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
@@ -24,8 +25,10 @@
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^4.21.2",
+    "express-fileupload": "^1.5.1",
+    "fs": "^0.0.1-security",
+    "googleapis": "^148.0.0",
     "pg": "^8.14.0",
-    "puppeteer": "^24.6.1",
     "puppeteer-core": "^24.3.1"
   }
 }

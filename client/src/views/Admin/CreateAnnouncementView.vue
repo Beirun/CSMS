@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { addAnnouncement, getAnnouncements } from '@/api/announcement'
 import Megaphone from '@/components/icons/Megaphone.vue'
-import AdminNavbar from '@/components/AdminNavbar.vue'
+import AdminNavbar from '@/components/AdminSidebar.vue'
 import { onBeforeMount, ref } from 'vue'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
 import { errorToast, successToast } from '@/library/toast'
@@ -40,8 +40,7 @@ const handleCreateAnnouncement = async () => {
 
 </script>
 <template>
-  <AdminNavbar/>
-  <div class="min-h-screen w-screen flex flex-col items-center">
+  <div class="min-h-screen max-w-screen flex flex-col items-center">
     <div class="w-[85%] pt-25">
       <button
         @click="isOpen = true"

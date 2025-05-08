@@ -2,6 +2,17 @@
 import NerdAmico from '@/components/icons/NerdAmico.vue';
 import Navbar from '@/components/Navbar.vue';
 import { RouterLink } from 'vue-router';
+import { onBeforeMount } from 'vue';
+import { useStudentStore } from '@/stores/student.store';
+
+const studentStore = useStudentStore()
+onBeforeMount(async() => {
+    if (studentStore.user.type === 'admin') {
+        window.location.href = '/dashboard/admin'
+    } else if (studentStore.user.type === 'student') {
+        window.location.href = '/dashboard'
+    }
+})
 </script>
 
 <template>
