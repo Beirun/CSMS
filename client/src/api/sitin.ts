@@ -7,7 +7,7 @@ type SitIn = {
 }
 
 export const addSitIn = async (sitin: SitIn) => {
-    console.log(sitin);
+    console.log("sitin",sitin);
     const response = await axios.post('http://localhost:3000/sitin', sitin);
     return response.data;
 }
