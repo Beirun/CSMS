@@ -5,6 +5,8 @@ import sitinRoute from "./routes/sitin.route";
 import announcementRoute from "./routes/announcement.route";
 import resourcesRoute from "./routes/resource.route";
 import schedulesRoute from "./routes/schedules.route";
+import pcRoute from "./routes/pc.route";
+import reservationRoute from "./routes/reservation.route";
 import fileUpload from "express-fileupload";
 const app = express();
 
@@ -17,6 +19,8 @@ app.use("/sitin", sitinRoute);
 app.use("/announcement", announcementRoute);
 app.use("/resource", resourcesRoute);
 app.use("/schedules", schedulesRoute);
+app.use("/pc", pcRoute);
+app.use("/reservation",reservationRoute)
 
 
 app.listen(3000, () => {
