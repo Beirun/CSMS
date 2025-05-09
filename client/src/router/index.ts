@@ -19,6 +19,7 @@ import LeaderboardView from '@/views/Admin/LeaderboardView.vue';
 import StudentLabResourcesView from '@/views/User/LabResourcesView.vue';
 import AdminReservationView from '@/views/Admin/ReservationsView.vue';
 import LabScheduleView from '@/views/Admin/LabScheduleView.vue';
+import ComputerManagementView from '@/views/Admin/ComputerManagementView.vue';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -121,6 +122,10 @@ const router = createRouter({
       path: '/schedule',
       name: 'schedule',
       component: LabScheduleView
+    },{
+      path: '/manage-computer',
+      name: 'manage-computer',
+      component: ComputerManagementView
     }
   ],
 })
