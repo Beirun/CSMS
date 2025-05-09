@@ -36,7 +36,7 @@
                     <th scope="col" class="px-6 py-3 text-left text-md font-medium text-gray-300 uppercase tracking-wider">
                       PC No.
                     </th>
-                    <th scope="col" class="px-6 py-3 text-left text-md font-medium text-gray-300 uppercase tracking-wider">
+                    <th scope="col" class="pl-20 px-6 py-3 text-left text-md font-medium text-gray-300 uppercase tracking-wider">
                       Time In
                     </th>
                     <th scope="col" class="px-6 py-3 text-left text-md font-medium text-gray-300 uppercase tracking-wider">
@@ -54,19 +54,19 @@
                       {{ reservation.purpose }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-md">
-                      {{ reservation.laboratory }}
+                      {{ reservation.labno }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-md">
                       {{ reservation.pcno }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-md">
-                      {{ formatTime(reservation.timeIn) }}
+                      {{ formatDate(reservation.timein.slice(0,10)) }} {{ reservation.timein.slice(11) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-md" 
                       :class="{
-                        'text-primary': reservation.status === 'Active',
-                        'text-gray-300': reservation.status === 'Completed',
-                        'text-red-400': reservation.status === 'Cancelled'
+                        'text-yellow-500/50': reservation.status === 'Pending',
+                        'text-red-500/50': reservation.status === 'Disapproved',
+                        'text-green-500/50': reservation.status === 'Approved'
                       }">
                       {{ reservation.status }}
                     </td>
@@ -99,15 +99,15 @@
         <div class="space-y-4 pb-4">
           <div class="flex justify-between items-center w-full">
             <Label class="text-gray-300 w-[45%]">ID No:</Label>
-            <span class="text-gray-200 font-medium w-[45%] text-right">{{ currentStudent.idno }}</span>
+            <span class="text-gray-200 font-medium w-[45%] text-right">{{ student.idno }}</span>
           </div>
           <div class="flex justify-between items-center w-full">
             <Label class="text-gray-300 w-[45%]">Student Name:</Label>
-            <span class="text-gray-200 font-medium w-[45%] text-right">{{ currentStudent.name }}</span>
+            <span class="text-gray-200 font-medium w-[45%] text-right">{{ student.firstname }} {{ student.middlename }} {{ student.lastname }}</span>
           </div>
           <div class="flex justify-between items-center w-full">
             <Label class="text-gray-300 w-[45%]">Remaining Sessions:</Label>
-            <span class="text-gray-200 font-medium w-[45%] text-right">{{ currentStudent.remainingSessions }}</span>
+            <span class="text-gray-200 font-medium w-[45%] text-right">{{ student.sessions }}</span>
           </div>
         </div>
 
@@ -124,7 +124,7 @@
                 <SelectGroup>
                   <SelectLabel>Purposes</SelectLabel>
                   <SelectItem 
-                    v-for="purpose in purposes" 
+                    v-for="purpose in purposes.slice(1)" 
                     :key="purpose" 
                     :value="purpose"
                     class="hover:bg-[#444]"
@@ -250,9 +250,10 @@
   </template>
   
   <script setup lang="ts">
-  import { ref, computed } from 'vue'
+  import { ref, computed, onBeforeMount } from 'vue'
   import NavbarDashboard from '@/components/StudentSidebar.vue'
   import { PlusIcon, ChevronRightIcon, CalendarIcon } from 'lucide-vue-next'
+  import { purposes } from '@/library/list'
   import {
     Dialog,
     DialogContent,
@@ -277,63 +278,72 @@
   import { Calendar } from '@/components/ui/calendar'
   import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import type { DateValue } from 'reka-ui'
-  
+import type { PC } from '@/types/PC';
+import { getAvailablePCs } from '@/api/pc'
+import { useStudentStore } from '@/stores/student.store'
+import { addReservation, getReservationsByStudent } from '@/api/reservation'
+import { successToast } from '@/library/toast'
+import type { Reservation } from '@/types/Reservation'
   // Current student data (replace with your actual auth data)
-  const currentStudent = ref({
-    idno: '2020-00123',
-    name: 'Juan Dela Cruz',
-    remainingSessions: 5
-  })
-  
+  const { student } = useStudentStore()
+
   const labph = ref("Select laboratory")
   // Dialog state
   const isDialogOpen = ref(false)
   
   // New reservation form
   const newReservation = ref({
+    idno : student.idno,
     purpose: '',
     laboratory: '',
     pcno: '',
     date: undefined as DateValue | undefined,
-    time: ''
+    time: '',
+    status: 'Pending',
+    stringDate: ''
   })
   
   // Sample data
-  const purposes = [
-    'Thesis Research',
-    'Capstone Project',
-    'Programming Practice',
-    'Data Analysis',
-    'Network Configuration'
-  ]
   
-  const laboratories = [
-    {
-      name: 'Computer Lab 1',
-      pcs: ['A-01', 'A-02', 'A-03', 'A-04', 'A-05', 'A-06', 'A-07', 'A-08']
-    },
-    {
-      name: 'Computer Lab 2',
-      pcs: ['B-01', 'B-02', 'B-03', 'B-04', 'B-05', 'B-06']
-    },
-    {
-      name: 'Computer Lab 3',
-      pcs: ['C-01', 'C-02', 'C-03', 'C-04', 'C-05']
-    },
-    {
-      name: 'Networking Lab',
-      pcs: ['N-01', 'N-02', 'N-03', 'N-04']
+
+interface Laboratory {
+  name: string;
+  pcs: string[]; // Array of PC numbers (e.g., ['01', '02'])
+}
+const pcs = ref<PC[]>([])
+const laboratories = ref<Laboratory[]>([])
+
+function groupPcsByLab(pcsData: PC[]): Laboratory[] {
+  // Group PCs by lab number
+  const labsMap: Record<string, string[]> = {};
+
+  pcsData.forEach((pc: PC) => {
+    if (!labsMap[pc.labno]) {
+      labsMap[pc.labno] = [];
     }
-  ]
-  
+    labsMap[pc.labno].push(pc.pcno.padStart(2, '0')); // Ensure 2-digit format
+  });
+
+  // Convert to laboratory format
+  return Object.entries(labsMap).map(([labno, pcs]) => ({
+    name: `Lab ${labno}`,
+    pcs: pcs
+  }));
+}
+
+
+
+
+console.log(laboratories);
   // Time slots from 8AM to 5PM
-  const timeSlots = Array.from({ length: 10 }, (_, i) => {
-    const hour = 8 + i
-    return `${hour}:00 - ${hour + 1}:00`
-  })
-  
+  const timeSlots = Array.from({ length: 20 }, (_, i) => {
+  const hour = 8 + Math.floor(i / 2);
+  const minute = (i % 2) === 0 ? '00' : '30';
+  const period = hour >= 12 ? 'PM' : 'AM';
+  const displayHour = hour > 12 ? hour - 12 : hour;
+  return `${displayHour}:${minute} ${period}`;
+});
   const laboratoryDropdownOpen = ref(false)
-const hoveredLab = ref(null)
 
 // Modified selectPC function
 function selectPC(labName : string, pc :string) {
@@ -365,67 +375,43 @@ function handleDropdownOpen(open : boolean) {
  
   
   // Submit function
-  function submitReservation() {
+  async function submitReservation() {
     console.log('Submitting reservation:', {
       ...newReservation.value,
-      studentId: currentStudent.value.idno,
-      studentName: currentStudent.value.name
+      date: newReservation.value.date!.toString()
     })
+    newReservation.value = {
+      ...newReservation.value,
+      laboratory: newReservation.value.laboratory.split(' ')[1],
+      stringDate: newReservation.value.date!.toString()
+    }
+    const response = await addReservation(newReservation.value)
+    if(response.success){
+      successToast('Reservation added successfully')
+    }
+    console.log("New reservation: ", newReservation.value)
+    const reservationResponse = await getReservationsByStudent(student.idno)
+    reservations.value = reservationResponse.reservation
+    const pcsResponse = await getAvailablePCs()
+    pcs.value = pcsResponse.pcs
+    laboratories.value = groupPcsByLab(pcs.value)
     // Add your submission logic here
     isDialogOpen.value = false
     // Reset form
     newReservation.value = {
+      idno : student.idno,
       purpose: '',
       laboratory: '',
       pcno: '',
       date: undefined,
-      time: ''
+      time: '',
+      stringDate: '',
+      status: 'Pending'
     }
   }
   
   // Sample data
-  const reservations = ref([
-    {
-      id: '1',
-      purpose: 'Thesis Research - Machine Learning Implementation',
-      laboratory: 'Computer Lab 1',
-      pcno: 'A-12',
-      timeIn: '2023-05-15T09:30:00',
-      status: 'Active'
-    },
-    {
-      id: '2',
-      purpose: 'Capstone Project - Database Development',
-      laboratory: 'Computer Lab 2',
-      pcno: 'B-05',
-      timeIn: '2023-05-14T14:15:00',
-      status: 'Active'
-    },
-    {
-      id: '3',
-      purpose: 'Programming Practice',
-      laboratory: 'Computer Lab 3',
-      pcno: 'C-21',
-      timeIn: '2023-05-13T10:45:00',
-      status: 'Completed'
-    },
-    {
-      id: '4',
-      purpose: 'Data Analysis for Research',
-      laboratory: 'Computer Lab 1',
-      pcno: 'A-08',
-      timeIn: '2023-05-12T13:20:00',
-      status: 'Cancelled'
-    },
-    {
-      id: '5',
-      purpose: 'Network Configuration Project',
-      laboratory: 'Networking Lab',
-      pcno: 'N-03',
-      timeIn: '2023-05-11T08:00:00',
-      status: 'Active'
-    },
-  ])
+  const reservations = ref<Reservation[]>([])
   const searchQuery = ref('')
   
   // Computed properties
@@ -433,11 +419,21 @@ function handleDropdownOpen(open : boolean) {
     const query = searchQuery.value.toLowerCase()
     return reservations.value.filter(reservation => 
       reservation.purpose.toLowerCase().includes(query) ||
-      reservation.laboratory.toLowerCase().includes(query) ||
+      reservation.labno.toLowerCase().includes(query) ||
       reservation.pcno.toLowerCase().includes(query)
     )
   })
+
+  onBeforeMount(async () => {
+    const response = await getReservationsByStudent(student.idno)
+    console.log(response)
+    reservations.value = response.reservation
+    const pcResponse = await getAvailablePCs()
+    pcs.value = pcResponse.pcs
+    laboratories.value = groupPcsByLab(pcs.value)
+  })
   
+ 
   // Methods
   function formatTime(dateString : string) {
     const date = new Date(dateString)
