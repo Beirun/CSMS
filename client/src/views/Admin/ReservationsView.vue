@@ -37,7 +37,7 @@
                   <th scope="col" class="px-6 py-3 text-left text-md font-medium text-gray-300 uppercase tracking-wider">
                     PC No.
                   </th>
-                  <th scope="col" class="px-6 py-3 text-left text-md font-medium text-gray-300 uppercase tracking-wider">
+                  <th scope="col" class="pl-20 px-6 py-3 text-left text-md font-medium text-gray-300 uppercase tracking-wider">
                     Time In
                   </th>
                   <th scope="col" class="px-6 py-3 text-left text-md font-medium text-gray-300 uppercase tracking-wider">
@@ -52,7 +52,7 @@
                   class="hover:bg-[#303030] transition-colors"
                 >
                   <td class="px-6 py-4 whitespace-nowrap text-md font-medium">
-                    {{ reservation.studentName }}
+                    {{ reservation.firstname }} {{ reservation.middlename }} {{ reservation.lastname }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-md text-gray-400">
                     {{ reservation.idno }}
@@ -61,13 +61,13 @@
                     {{ reservation.purpose }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-md">
-                    {{ reservation.laboratory }}
+                    {{ reservation.labno }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-md">
                     {{ reservation.pcno }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-md">
-                    {{ formatTime(reservation.timeIn) }}
+                    {{ formatDate(reservation.timein.slice(0,10)) }} {{ reservation.timein.slice(11) }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-md">
                     <div class="flex gap-2">
@@ -125,7 +125,7 @@
                   class="hover:bg-[#303030] transition-colors"
                 >
                   <td class="px-6 py-4 whitespace-nowrap text-md font-medium">
-                    {{ reservation.studentName }}
+                    {{ reservation.firstname }} {{ reservation.middlename }} {{ reservation.lastname }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-md text-gray-400">
                     {{ reservation.idno }}
@@ -134,20 +134,20 @@
                     {{ reservation.purpose }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-md">
-                    {{ reservation.laboratory }}
+                    {{ reservation.labno }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-md">
                     {{ reservation.pcno }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-md">
-                    {{ formatTime(reservation.timeIn) }}
+                    {{ formatTime(reservation.timein) }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-md" 
-                    :class="{
-                      'text-primary': reservation.status === 'Active',
-                      'text-gray-300': reservation.status === 'Completed',
-                      'text-red-400': reservation.status === 'Cancelled'
-                    }">
+                  :class="{
+                        'text-yellow-500/70': reservation.status === 'Pending',
+                        'text-red-500/70': reservation.status === 'Disapproved',
+                        'text-green-500/70': reservation.status === 'Approved'
+                      }">
                     {{ reservation.status }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-md">
@@ -186,7 +186,7 @@
         </div>
         <div class="flex justify-between items-center">
           <span class="text-gray-400">Student Name</span>
-          <span class="font-medium">{{ selectedReservation?.studentName }}</span>
+          <span class="font-medium">{{ selectedReservation?.firstname }} {{ selectedReservation?.middlename }} {{ selectedReservation?.lastname }}</span>
         </div>
         <div class="flex justify-between items-center">
           <span class="text-gray-400">Email</span>
@@ -198,7 +198,7 @@
         </div>
         <div class="flex justify-between items-center">
           <span class="text-gray-400">Year Level</span>
-          <span class="font-medium">{{ selectedReservation?.yearLevel || 'N/A' }}</span>
+          <span class="font-medium">{{ selectedReservation?.yearlevel || 'N/A' }}</span>
         </div>
         <div class="flex justify-between items-center">
           <span class="text-gray-400">Course</span>
@@ -206,7 +206,7 @@
         </div>
         <div class="flex justify-between items-center">
           <span class="text-gray-400">Remaining Sessions</span>
-          <span class="font-medium">{{ selectedReservation?.remainingSessions ?? 'N/A' }}</span>
+          <span class="font-medium">{{ selectedReservation?.sessions ?? 'N/A' }}</span>
         </div>
       </div>
 
@@ -219,7 +219,7 @@
         </div>
         <div class="flex justify-between items-center">
           <span class="text-gray-400">Laboratory</span>
-          <span class="font-medium">{{ selectedReservation?.laboratory }}</span>
+          <span class="font-medium">{{ selectedReservation?.labno }}</span>
         </div>
         <div class="flex justify-between items-center">
           <span class="text-gray-400">PC Number</span>
@@ -227,28 +227,27 @@
         </div>
         <div class="flex justify-between items-center">
           <span class="text-gray-400">Time In</span>
-          <span class="font-medium">{{ selectedReservation ? formatTime(selectedReservation.timeIn) : '' }}</span>
+          <span class="font-medium">{{ selectedReservation ? formatDate(selectedReservation.timein.slice(0,10)) + ' ' + selectedReservation.timein.slice(11) : '' }}</span>
         </div>
         <div class="flex justify-between items-center">
           <span class="text-gray-400">Status</span>
           <span class="font-medium" 
             :class="{
-              'text-primary': selectedReservation?.status === 'Active',
-              'text-gray-300': selectedReservation?.status === 'Completed',
-              'text-red-400': selectedReservation?.status === 'Cancelled',
-              'text-yellow-400': selectedReservation?.status === 'Pending'
-            }">
+                        'text-yellow-500/50': selectedReservation?.status === 'Pending',
+                        'text-red-500/50': selectedReservation?.status === 'Disapproved',
+                        'text-green-500/50': selectedReservation?.status === 'Approved'
+                      }">
             {{ selectedReservation?.status }}
           </span>
         </div>
       </div>
     </div>
     <DialogFooter v-if="selectedReservation?.status === 'Pending'" class="px-6 pb-6">
-      <Button @click="approveReservation(selectedReservation.id)" class="bg-[#00BD7E] hover:bg-[#00BD7E]/90">
+      <Button @click="approveReservation(selectedReservation)" class="bg-[#00BD7E] hover:bg-[#00BD7E]/90">
         Approve
       </Button>
       <Button @click="rejectReservation(selectedReservation.id)" variant="destructive">
-        Reject
+        Disapprove
       </Button>
     </DialogFooter>
   </DialogContent>
@@ -257,7 +256,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onBeforeMount } from 'vue'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -268,117 +267,49 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
+import {getReservations, updateReservation} from '@/api/reservation'
+import type { StudentReservation } from '@/types/Reservation'
+import { errorToast, successToast } from '@/library/toast'
+import { addSitIn } from '@/api/sitin'
 
-interface Reservation {
-  id: string
-  idno: string
-  studentName: string
-  email?: string
-  username?: string
-  yearLevel?: string
-  course?: string
-  remainingSessions?: number
-  purpose: string
-  laboratory: string
-  pcno: string
-  timeIn: string
-  status: string
-}
+onBeforeMount(async () => {
+  const response = await getReservations()
+  console.log(response)
+  reservations.value = response.reservation
+  pendingReservations.value = reservations.value.filter(reservation => reservation.status === 'Pending')
+  reservationLogs.value = reservations.value.filter(reservation => reservation.status !== 'Pending')
+  if (response.success) {
+    // reservations.value = response.reservations
+  }
+})
 
 // Sample data for pending reservations
-const pendingReservations = ref<Reservation[]>([
-  {
-    id: '6',
-    idno: '2020-00678',
-    studentName: 'Maria Garcia',
-    purpose: 'Software Development',
-    laboratory: 'Computer Lab 2',
-    pcno: 'B-03',
-    timeIn: '2023-05-16T10:00:00',
-    status: 'Pending'
-  },
-  {
-    id: '7',
-    idno: '2020-00789',
-    studentName: 'John Doe',
-    purpose: 'Data Science Project',
-    laboratory: 'Computer Lab 1',
-    pcno: 'A-05',
-    timeIn: '2023-05-16T11:30:00',
-    status: 'Pending'
-  }
-])
-
-// Modified sample data for reservation logs (with student info)
-const reservations = ref<Reservation[]>([
-  {
-    id: '1',
-    idno: '2020-00123',
-    studentName: 'Juan Dela Cruz',
-    purpose: 'Thesis Research - Machine Learning Implementation',
-    laboratory: 'Computer Lab 1',
-    pcno: 'A-12',
-    timeIn: '2023-05-15T09:30:00',
-    status: 'Active'
-  },
-  {
-    id: '2',
-    idno: '2020-00456',
-    studentName: 'Maria Santos',
-    purpose: 'Capstone Project - Database Development',
-    laboratory: 'Computer Lab 2',
-    pcno: 'B-05',
-    timeIn: '2023-05-14T14:15:00',
-    status: 'Active'
-  },
-  {
-    id: '3',
-    idno: '2020-00321',
-    studentName: 'Pedro Reyes',
-    purpose: 'Programming Practice',
-    laboratory: 'Computer Lab 3',
-    pcno: 'C-21',
-    timeIn: '2023-05-13T10:45:00',
-    status: 'Completed'
-  },
-  {
-    id: '4',
-    idno: '2020-00567',
-    studentName: 'Anna Lopez',
-    purpose: 'Data Analysis for Research',
-    laboratory: 'Computer Lab 1',
-    pcno: 'A-08',
-    timeIn: '2023-05-12T13:20:00',
-    status: 'Cancelled'
-  },
-  {
-    id: '5',
-    idno: '2020-00234',
-    studentName: 'Luis Garcia',
-    purpose: 'Network Configuration Project',
-    laboratory: 'Networking Lab',
-    pcno: 'N-03',
-    timeIn: '2023-05-11T08:00:00',
-    status: 'Active'
-  },
-])
+const reservations = ref<StudentReservation[]>([])
+const reservationLogs = ref<StudentReservation[]>([])
+const pendingReservations = ref<StudentReservation[]>([])
 
 const searchQuery = ref('')
 const isDialogOpen = ref(false)
-const selectedReservation = ref<Reservation | null>(null)
+const selectedReservation = ref<StudentReservation | null>(null)
 
 // Computed properties
 const filteredReservations = computed(() => {
   const query = searchQuery.value.toLowerCase()
-  return reservations.value.filter(reservation => 
+  return reservationLogs.value.filter(reservation => 
     reservation.purpose.toLowerCase().includes(query) ||
-    reservation.laboratory.toLowerCase().includes(query) ||
+    reservation.labno.toLowerCase().includes(query) ||
     reservation.pcno.toLowerCase().includes(query) ||
-    reservation.studentName.toLowerCase().includes(query) ||
+    (reservation.firstname + ' ' + reservation.middlename + ' ' + reservation.lastname).toLowerCase().includes(query) ||
     reservation.idno.toLowerCase().includes(query)
   )
 })
-
+function formatDate(date : string) {
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
+  }
 // Methods
 function formatTime(dateString: string) {
   const date = new Date(dateString)
@@ -391,28 +322,48 @@ function formatTime(dateString: string) {
   })
 }
 
-function openReservationDetails(reservation: Reservation) {
+function openReservationDetails(reservation: StudentReservation) {
   selectedReservation.value = reservation
   isDialogOpen.value = true
 }
 
-function approveReservation(id: string) {
-  const index = pendingReservations.value.findIndex(r => r.id === id)
-  if (index !== -1) {
-    const approvedReservation = { ...pendingReservations.value[index], status: 'Active' }
-    reservations.value.unshift(approvedReservation)
-    pendingReservations.value.splice(index, 1)
-    isDialogOpen.value = false
+async function approveReservation(reservation: StudentReservation) {
+  const id = reservation.id
+  const response = await updateReservation(id, 'Approved')
+  if(!response.success) return
+    successToast('Reservation Approved')
+    const newSitin = {
+    idno: reservation.idno,
+    sitin_purpose: reservation.purpose,
+    sitin_laboratory: reservation.labno,
   }
+  console.log(newSitin)
+  
+  const sitinResponse = await addSitIn(newSitin)
+
+  if (sitinResponse.success) {
+    successToast('Sit-in added successfully')
+    
+  } else {
+    errorToast('Student is already seated-in')
+  }
+    isDialogOpen.value = false
+    const reservationResponse = await getReservations()
+  console.log(response)
+  reservations.value = reservationResponse.reservation
+  pendingReservations.value = reservations.value.filter(reservation => reservation.status === 'Pending')
+  reservationLogs.value = reservations.value.filter(reservation => reservation.status !== 'Pending')
 }
 
-function rejectReservation(id: string) {
-  const index = pendingReservations.value.findIndex(r => r.id === id)
-  if (index !== -1) {
-    const rejectedReservation = { ...pendingReservations.value[index], status: 'Cancelled' }
-    reservations.value.unshift(rejectedReservation)
-    pendingReservations.value.splice(index, 1)
+async function rejectReservation(id: string) {
+    const response = await updateReservation(id, 'Disapproved' )
+    if(!response.success) return
+    successToast('Reservation Disapproved')
     isDialogOpen.value = false
-  }
+    const reservationResponse = await getReservations()
+  console.log(response)
+  reservations.value = reservationResponse.reservation
+  pendingReservations.value = reservations.value.filter(reservation => reservation.status === 'Pending')
+  reservationLogs.value = reservations.value.filter(reservation => reservation.status !== 'Pending')
 }
 </script>
