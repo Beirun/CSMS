@@ -9,7 +9,7 @@ import { useStudentStore } from '@/stores/student.store'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
 import { submitFeedback } from '@/api/feedback'
 import { successToast, errorToast } from '@/library/toast'
-import type { SitinFeedback } from '@/types/feedback'
+import type { SitinFeedback } from '@/types/Feedback'
 
 const {student} = useStudentStore()
 const sitins = ref<SitinByStudent[]>([])
