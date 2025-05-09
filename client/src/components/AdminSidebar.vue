@@ -68,7 +68,8 @@ import {
   FileText,
   MessageSquare,
   LogOut,
-  CalendarCheck
+  CalendarCheck,
+  LaptopMinimal
 } from 'lucide-vue-next'
 import Button from './ui/button/Button.vue'
 import {
@@ -95,7 +96,8 @@ const links = [
   { to: '/leaderboard', label: 'Leaderboards', icon: CalendarCheck },
   { to: '/schedule', label: 'Schedules', icon: FileText },
   { to: '/records', label: 'Records', icon: FileText },
-  { to: '/feedbacks', label: 'Feedbacks', icon: MessageSquare }
+  { to: '/feedbacks', label: 'Feedbacks', icon: MessageSquare },
+  { to: '/manage-computer', label: 'Manage PC', icon: LaptopMinimal }
 ]
 
 const studentStore = useStudentStore()
