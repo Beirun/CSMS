@@ -58,3 +58,11 @@ export const addSessionFromPoint = async (idno: string) => {
     return response.data;
 }
 
+// Placeholder function for student session count
+export const getStudentSessionCount = async (): Promise<any> => {
+  console.warn('Using placeholder getStudentSessionCount. Replace with actual API call.');
+  // Simulate API delay
+  await new Promise<void>((resolve) => setTimeout(resolve, 500));
+  // Return mock data
+  return { count: 15 };
+};

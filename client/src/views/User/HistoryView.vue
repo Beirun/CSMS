@@ -77,7 +77,7 @@ const handleSubmitFeedback = async () => {
                     class="px-6 py-6 whitespace-nowrap font-semibold text-md text-[#8e8e8e]" :class="field ==='sitin_laboratory'? 'w-20 text-center': ''">
                     {{ field === 'sitin_timein' || field === 'sitin_timeout' ? setDate(sitin[field as keyof SitinByStudent]) : sitin[field as keyof SitinByStudent] }}</td>
                     <td class="text-center w-100 px-" v-if="sitin.sitin_feedback === null">
-                      <button @click="openModal(sitin.sitin_id)" class="bg-primary/70 font-semibold text-lg hover:bg-primary/90 transition-all duration-300 active:scale-97 active:bg-primary/60 cursor-pointer  text-[#f8f8f8] px-4 py-2 rounded-md ">
+                      <button @click="openModal(sitin.sitin_id)" class="bg-[#00BD7E]/70 font-semibold text-lg hover:bg-[#00BD7E]/90 transition-all duration-300 active:scale-97 active:bg-primary/60 cursor-pointer  text-[#f8f8f8] px-4 py-2 rounded-md ">
                         Submit Feedback
                       </button>
                     </td>

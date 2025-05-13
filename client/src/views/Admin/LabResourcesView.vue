@@ -78,7 +78,7 @@ const downloadFile = async (index: number) => {
     <div class="w-full flex justify-between items-center">
       <h1 class="text-4xl font-bold w-full">Lab Resources</h1>
       <button @click="uploadDialog.isOpen = true"
-        class="bg-primary rounded-md w-50 p-4 text-xl font-semibold hover:bg-primary/70 text-[#2e2e2e] transition-all duration-300 cursor-pointer">
+        class="bg-[#008F5F] rounded-md w-50 p-4 text-xl font-semibold hover:bg-[#008F5F]/70 text-[#2e2e2e] transition-all duration-300 cursor-pointer">
         <i class="pi pi-plus text-lg font-bold"></i> Upload File
       </button>
       <Dialog :isOpen="uploadDialog.isOpen" :closeModal="uploadDialog.closeModal"
@@ -125,7 +125,7 @@ const downloadFile = async (index: number) => {
         </div>
       </Dialog>
     </div>
-    <div class="min-h-[75vh] mb-8 bg-[#222222] w-full rounded-xl shadow-md shadow-black flex flex-wrap justify-evenly">
+    <div class="min-h-[75vh] mb-8 bg-[#222222] w-full rounded-xl shadow-md shadow-black  grid grid-cols-3 lg:grid-cols-5 place-items-center ">
       <div v-if="!loaded" class="m-8" v-for="index in 12" :key="index">
         <div class="size-50 bg-[#3a3a3a] rounded-lg animate-pulse"></div>
         <div class="animate-pulse rounded-lg bg-[#3a3a3a] w-full h-5 mt-4"></div>

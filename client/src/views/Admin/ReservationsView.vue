@@ -271,6 +271,8 @@ import {getReservations, updateReservation} from '@/api/reservation'
 import type { StudentReservation } from '@/types/Reservation'
 import { errorToast, successToast } from '@/library/toast'
 import { addSitIn } from '@/api/sitin'
+import { updatePC } from '@/api/pc'
+import { type PC } from '@/types/PC'
 
 onBeforeMount(async () => {
   const response = await getReservations()
@@ -343,6 +345,12 @@ async function approveReservation(reservation: StudentReservation) {
 
   if (sitinResponse.success) {
     successToast('Sit-in added successfully')
+    const updatedPC : PC = {
+      pcno: reservation.pcno,
+      labno: reservation.labno,
+      status: 'Used'
+    }
+    await updatePC(updatedPC)
     
   } else {
     errorToast('Student is already seated-in')
