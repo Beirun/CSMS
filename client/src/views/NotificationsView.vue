@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeMount } from 'vue';
 import { useRouter } from 'vue-router';
 import { setDate } from '@/library/date'; // Your time formatting utility
-
+import type { Notification } from '@/types/Notification';
 // Shadcn-vue Components
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -14,28 +14,19 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
-// import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'; // If you have user avatars
+import { useStudentStore, useNotificationStore } from '@/stores/student.store';
+import { getNotifications, updateNotification } from '@/api/notification';
+const studentStore = useStudentStore();
 
+const notificationStore = useNotificationStore();
 // Lucide Icons
 import {
   BellRing, Check, Trash2, EllipsisVertical, Archive, MailOpen, Filter, X
 } from 'lucide-vue-next';
 
-interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  createdAt: Date;
-  read: boolean;
-  type: 'system' | 'update' | 'message' | 'alert'; // For different icons/styles
-  link?: string; // Optional link to navigate to
-  sender?: { // Optional sender info
-    name: string;
-    avatarUrl?: string;
-  };
-}
 
-const router = useRouter();
+
+const router = useRouter(); // Kept for potential future use, though not used with link removal
 const isLoading = ref(true);
 const notifications = ref<Notification[]>([]);
 const activeTab = ref<'all' | 'unread'>('all');
@@ -43,57 +34,81 @@ const activeTab = ref<'all' | 'unread'>('all');
 // Mock Data - Replace with actual API call
 const fetchNotifications = async () => {
   isLoading.value = true;
-  await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+  // await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
 
   // Explicitly type the mock data array here
-  const mockDataArray: Notification[] = [ // <--- Added : Notification[]
-    // ... (your mock data objects, ensuring 'type' is one of the allowed literals)
-    { id: '1', title: 'Password Changed Successfully', message: 'Your account password was updated a moment ago. If this wasn\'t you, please secure your account.', createdAt: new Date(Date.now() - 60 * 1000), read: false, type: 'alert', link: '/profile/security' },
-    { id: '2', title: 'New Lab Resource Available', message: 'A new version of "Advanced Algorithm Design" PDF has been uploaded by Prof. Smith.', createdAt: new Date(Date.now() - 3600 * 1000 * 2), read: false, type: 'update', link: '/student/resources/doc-123' },
-    // ... more mock data
-  ];
-  
-  notifications.value = mockDataArray.sort((a,b) => b.createdAt.getTime() - a.createdAt.getTime());
+  notificationStore.fetchNotifications(studentStore.user.type === "admin" ? "0" : studentStore.student.idno)
+  notifications.value = notificationStore.notifications;
   isLoading.value = false;
 };
-onMounted(() => {
+
+
+onBeforeMount(async () => {
   fetchNotifications();
 });
 
 const filteredNotifications = computed(() => {
   if (activeTab.value === 'unread') {
-    return notifications.value.filter(n => !n.read);
+    return notifications.value.filter(n => n.status === 'unread');
   }
   return notifications.value;
 });
 
-const unreadCount = computed(() => notifications.value.filter(n => !n.read).length);
+const unreadCount = computed(() => notifications.value.filter(n => n.status === 'unread').length);
 
-const markAsRead = (notificationId: string) => {
-  const notification = notifications.value.find(n => n.id === notificationId);
+const markAsRead = async (notifId: string) => {
+  const notification = notifications.value.find(n => n.notif_id === notifId);
   if (notification) {
-    notification.read = true;
+    notification.status = 'read';
     // API call to mark as read on backend
+    await updateNotification(notifId);
+    notificationStore.fetchNotifications(studentStore.user.type === "admin" ? "0" : studentStore.student.idno)
+    console.log(`Notification ${notifId} marked as read.`);
   }
 };
 
-const markAllAsRead = () => {
-  notifications.value.forEach(n => n.read = true);
+const markAsUnread = async (notifId: string) => {
+  const notification = notifications.value.find(n => n.notif_id === notifId);
+  if (notification) {
+    notification.status = 'unread';
+    // API call to mark as unread on backend
+    await updateNotification(notifId, 'unread');
+    notificationStore.fetchNotifications(studentStore.user.type === "admin" ? "0" : studentStore.student.idno)
+    console.log(`Notification ${notifId} marked as unread.`);
+     }
+}
+
+const markAllAsRead = async() => {
+  notifications.value.forEach(async(n) => {
+    if (n.status === 'unread') {
+      n.status = 'read';
+      await updateNotification(n.notif_id);
+      notificationStore.fetchNotifications(studentStore.user.type === "admin" ? "0" : studentStore.student.idno)
+    }
+  });
   // API call to mark all as read on backend
+  console.log('All notifications marked as read.');
 };
 
-const deleteNotification = (notificationId: string) => {
-  notifications.value = notifications.value.filter(n => n.id !== notificationId);
+const deleteNotification = async(notifId: string) => {
+  notifications.value = notifications.value.filter(n => n.notif_id !== notifId);
   // API call to delete on backend
+  await deleteNotification(notifId);
+notificationStore.fetchNotifications(studentStore.user.type === "admin" ? "0" : studentStore.student.idno)
+  notifications.value = notificationStore.notifications;
+  console.log(`Notification ${notifId} deleted.`);
 };
 
 const handleItemClick = (notification: Notification) => {
-  if (!notification.read) {
-    markAsRead(notification.id);
+  if (notification.status === 'unread') {
+    markAsRead(notification.notif_id);
   }
-  if (notification.link) {
-    router.push(notification.link);
-  }
+  // If you want to navigate somewhere based on notification type or other properties,
+  // you can add that logic here.
+  // e.g., if (notification.type === 'alert' && notification.title.includes('Password')) {
+  // router.push('/profile/security');
+  // }
+  console.log(`Clicked notification: ${notification.title}`);
 };
 
 const getNotificationIcon = (type: Notification['type']) => {
@@ -108,7 +123,7 @@ const getNotificationIcon = (type: Notification['type']) => {
 
 <template>
   <div class="min-h-screen bg-[#181818] text-neutral-100 p-4 md:p-6 lg:p-8">
-    <header class="mb-6 md:mb-8">
+    <header class="mb-6 md:mb-8 h-15">
       <h1 class="text-3xl md:text-4xl font-bold text-neutral-50">Notifications</h1>
       <p v-if="!isLoading && unreadCount > 0" class="text-sm text-neutral-400 mt-1">
         You have {{ unreadCount }} unread notification{{ unreadCount === 1 ? '' : 's' }}.
@@ -162,38 +177,37 @@ const getNotificationIcon = (type: Notification['type']) => {
     <div v-else-if="filteredNotifications.length > 0" class="space-y-3 md:space-y-4">
       <div
         v-for="notification in filteredNotifications"
-        :key="notification.id"
+        :key="notification.notif_id"
         @click="handleItemClick(notification)"
-        class="flex items-start p-4 bg-[#222222] rounded-lg shadow-sm border transition-all duration-200 ease-in-out"
+        class="flex items-start p-4 bg-[#222222] rounded-lg shadow-sm border transition-all duration-200 ease-in-out cursor-pointer"
         :class="[
-          notification.read ? 'border-[#333333] hover:border-[#444444]' : 'border-[#00BD7E]/50 hover:border-[#00BD7E]/80 shadow-lg shadow-[#00BD7E]/5',
-          notification.link ? 'cursor-pointer' : ''
+          notification.status === 'read' ? 'border-[#333333] hover:border-[#444444]' : 'border-[#00BD7E]/50 hover:border-[#00BD7E]/80 shadow-lg shadow-[#00BD7E]/5',
         ]"
       >
         <!-- Icon -->
         <div
           class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center mr-4 mt-1"
-          :class="notification.read ? 'bg-[#333333]' : 'bg-[#00BD7E]/20'"
+          :class="notification.status === 'read' ? 'bg-[#333333]' : 'bg-[#00BD7E]/20'"
         >
           <component
             :is="getNotificationIcon(notification.type)"
             class="w-5 h-5"
-            :class="notification.read ? 'text-neutral-400' : 'text-[#00BD7E]'"
+            :class="notification.status === 'read' ? 'text-neutral-400' : 'text-[#00BD7E]'"
           />
         </div>
 
         <!-- Content -->
         <div class="flex-grow">
           <div class="flex justify-between items-start">
-            <h3 class="font-semibold text-md text-neutral-100 mb-0.5 line-clamp-1" :class="{'!text-neutral-300': notification.read}">
+            <h3 class="font-semibold text-md text-neutral-100 mb-0.5 line-clamp-1" :class="{'!text-neutral-300': notification.status === 'read'}">
               {{ notification.title }}
             </h3>
-            <span v-if="!notification.read" class="ml-2 mt-1.5 h-2 w-2 bg-[#00BD7E] rounded-full flex-shrink-0" title="Unread"></span>
+            <span v-if="notification.status === 'unread'" class="ml-2 mt-1.5 h-2 w-2 bg-[#00BD7E] rounded-full flex-shrink-0" title="Unread"></span>
           </div>
-          <p class="text-sm text-neutral-300 line-clamp-2 mb-1" :class="{'!text-neutral-400': notification.read}">{{ notification.message }}</p>
+          <p class="text-sm text-neutral-300 line-clamp-2 mb-1" :class="{'!text-neutral-400': notification.status === 'read'}">{{ notification.message }}</p>
           <p class="text-xs text-neutral-500">
-            {{ setDate(notification.createdAt) }}
-            <span v-if="notification.sender"> • From: {{ notification.sender.name }}</span>
+            {{ setDate(notification.createdat) }}
+            <!-- Removed sender info: <span v-if="notification.sender"> • From: {{ notification.sender.name }}</span> -->
           </p>
         </div>
 
@@ -201,21 +215,21 @@ const getNotificationIcon = (type: Notification['type']) => {
         <div class="ml-2 flex-shrink-0">
           <DropdownMenu>
             <DropdownMenuTrigger as-child>
-              <Button variant="ghost" size="icon" class="h-8 w-8 text-neutral-400 hover:bg-[#333333] hover:text-neutral-100">
+              <Button @click.stop  variant="ghost" size="icon" class="h-8 w-8 text-neutral-400 hover:bg-[#333333] hover:text-neutral-100">
                 <EllipsisVertical class="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" class="bg-[#2a2a2a] border-[#444444] text-neutral-100 w-48 shadow-xl">
-              <DropdownMenuItem v-if="notification.read" @click.stop="() => { notification.read = false; /* API call */ }" class="hover:!bg-[#333333] focus:!bg-[#333333] cursor-pointer">
+              <DropdownMenuItem v-if="notification.status === 'read'" @click.stop="markAsUnread(notification.notif_id)" class="hover:!bg-[#333333] focus:!bg-[#333333] cursor-pointer">
                 <MailOpen class="mr-2 h-4 w-4 text-[#00BD7E]" />
                 <span>Mark as Unread</span>
               </DropdownMenuItem>
-              <DropdownMenuItem v-else @click.stop="markAsRead(notification.id)" class="hover:!bg-[#333333] focus:!bg-[#333333] cursor-pointer">
+              <DropdownMenuItem v-else @click.stop="markAsRead(notification.notif_id)" class="hover:!bg-[#333333] focus:!bg-[#333333] cursor-pointer">
                 <Check class="mr-2 h-4 w-4 text-[#00BD7E]" />
                 <span>Mark as Read</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator class="bg-[#444444]" />
-              <DropdownMenuItem @click.stop="deleteNotification(notification.id)" class="text-red-500 hover:!bg-red-500/10 focus:!bg-red-500/10 hover:!text-red-400 focus:!text-red-400 cursor-pointer">
+              <DropdownMenuItem @click.stop="deleteNotification(notification.notif_id)" class="text-red-500 hover:!bg-red-500/10 focus:!bg-red-500/10 hover:!text-red-400 focus:!text-red-400 cursor-pointer">
                 <Trash2 class="mr-2 h-4 w-4" />
                 <span>Delete</span>
               </DropdownMenuItem>

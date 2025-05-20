@@ -72,7 +72,7 @@ app.get("/student/:idno", async (req : Request, res : Response) => {
 
 app.get("/feedback", async (req : Request, res : Response) => {
     try {
-        const result = await db.query("SELECT s.*, f.sitin_feedback FROM sitins s JOIN feedback f ON s.sitin_id = f.sitin_id;");
+        const result = await db.query("SELECT s.*, f.sitin_feedback FROM sitins s JOIN feedback f ON s.sitin_id = f.sitin_id ORDER BY s.sitin_id DESC;");
         res.json({success: true, sitins: result.rows});
     } catch (err : any) {
         res.status(500).json({ error: err.message });

@@ -126,7 +126,7 @@ const downloadFile = async (index: number) => {
       </Dialog>
     </div>
     <div class="min-h-[75vh] mb-8 bg-[#222222] w-full rounded-xl shadow-md shadow-black  grid grid-cols-3 lg:grid-cols-5 place-items-center ">
-      <div v-if="!loaded" class="m-8" v-for="index in 12" :key="index">
+      <div v-if="!loaded" class="m-8" v-for="index in 10" :key="index">
         <div class="size-50 bg-[#3a3a3a] rounded-lg animate-pulse"></div>
         <div class="animate-pulse rounded-lg bg-[#3a3a3a] w-full h-5 mt-4"></div>
       </div>

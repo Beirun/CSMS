@@ -87,22 +87,42 @@ const timelineItemSpacing = '2.5rem'; // Corresponds to space-y-10
     </div>
 
     <!-- Actual Timeline -->
-    <div v-else class="relative">
+    <div v-else class="pb-8 flex w-8/10 pl-50">
       
-      <div v-if="announcements.length > 0" :class="`space-y-10 flex items-center flex-col `">
+      <div v-if="announcements.length > 0" :class="`space-y-10 grid w-full`">
         <div
           v-for="(announcement, index) in announcements"
           :key="announcement.announcement_id"
-          class="flex items-center"
+          class="flex items-center -ml-5"
         >
+        <!-- Content Card (Right of timeline) -->
+          <div class="flex-1 min-w-0 pl-3 sm:pl-4 ">
+            <Card v-if="index%2==0" class="hover:shadow-xl -ml-45 hover:bg-[#212121]  hover:shadow-[#00BD7E] transition-shadow border-0 duration-300 ease-in-out group w-150 bg-gradient-to-l from-[#212121] via-[#212121] via-[85%] to-transparent">
+              <CardHeader class="py-3 sm:py-4 px-4 sm:px-5">
+                <CardTitle class="text-3xl leading-1 text-foreground group-hover:text-primary transition-colors">
+                  <!-- Using a generic title, or use announcement.title if available -->
+                  CCS Admin <!-- Was "CCS Admin", now more generic. Can be dynamic. -->
+                </CardTitle>
+                <!-- Optional: If you want to show "CCS Admin" subtly -->
+                <!-- <CardDescription class="text-xs pt-1">By CCS Admin</CardDescription> -->
+              </CardHeader>
+              <CardContent class="py-3 sm:py-4 px-4 sm:px-5">
+                <p class="text-base text-foreground/90 leading-relaxed">
+                  {{ announcement.announcement_message }}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
           <!-- Date Column (Left of timeline) -->
           <div class="w-20 sm:w-24 text-right pr-3 sm:pr-4 flex-shrink-0 pt-0.5">
-            <p class="text-sm font-medium text-muted-foreground">
-              {{ formatTimelineDate(announcement.announcement_date).main }}
-            </p>
-            <p class="text-xs text-muted-foreground/80">
-              {{ formatTimelineDate(announcement.announcement_date).secondary }}
-            </p>
+            <div v-if="index%2==1">
+              <p class="text-sm font-medium text-muted-foreground">
+                {{ formatTimelineDate(announcement.announcement_date).main }}
+              </p>
+              <p class="text-xs text-muted-foreground/80">
+                {{ formatTimelineDate(announcement.announcement_date).secondary }}
+              </p>
+            </div>
           </div>
 
           <!-- Timeline Dot & Connector Line -->
@@ -112,18 +132,29 @@ const timelineItemSpacing = '2.5rem'; // Corresponds to space-y-10
               <!-- You could put an icon here if desired, e.g., BellIcon -->
             </div>
             <div v-if="index < announcements.length-1"
-              :class="`absolute left-2.25 w-0.5 h-[calc(1250%)] bg-[#00BD7E]`"
+              :class="`absolute left-2.25 w-0.5 h-[calc(1350%)] bg-[#00BD7E]`"
               aria-hidden="true"
             ></div>
           </div>
+<!-- Date Column (Left of timeline) -->
+          <div class="w-20 sm:w-24 text-right pr-3 sm:pr-4 flex-shrink-0 pt-0.5">
+            <div v-if="index%2==0">
 
+              <p class="text-sm font-medium text-muted-foreground">
+                {{ formatTimelineDate(announcement.announcement_date).main }}
+              </p>
+              <p class="text-xs text-muted-foreground/80">
+                {{ formatTimelineDate(announcement.announcement_date).secondary }}
+              </p>
+            </div>
+          </div>
           <!-- Content Card (Right of timeline) -->
           <div class="flex-1 min-w-0 pl-3 sm:pl-4 ">
-            <Card class="hover:shadow-xl bg-[#212121] transition-shadow duration-300 ease-in-out group w-200">
+            <Card :class="`${index%2==1? '-ml-20':''}`" v-if="index%2==1" class="hover:bg-[#212121]  hover:shadow-[#00BD7E] hover:shadow-xl transition-shadow border-0 duration-300 ease-in-out group w-150 bg-gradient-to-r from-[#212121] via-[#212121] via-[85%] to-transparent">
               <CardHeader class="py-3 sm:py-4 px-4 sm:px-5">
                 <CardTitle class="text-3xl leading-1 text-foreground group-hover:text-primary transition-colors">
                   <!-- Using a generic title, or use announcement.title if available -->
-                  Announcement <!-- Was "CCS Admin", now more generic. Can be dynamic. -->
+                  CCS Admin <!-- Was "CCS Admin", now more generic. Can be dynamic. -->
                 </CardTitle>
                 <!-- Optional: If you want to show "CCS Admin" subtly -->
                 <!-- <CardDescription class="text-xs pt-1">By CCS Admin</CardDescription> -->

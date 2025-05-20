@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen bg-[#1a1a1a] text-foreground p-4 md:p-8">
-    <header class="mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
+  <div class="max-h-screen bg-[#1a1a1a] text-foreground p-4 md:p-8">
+    <!-- <header class="mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
       <div>
         <h1 class="text-3xl font-bold">Welcome, {{ student.name }}!</h1>
         <p class="text-muted-foreground">Here's your sit-in dashboard overview.</p>
@@ -9,251 +9,230 @@
         <CalendarPlus class="mr-2 h-5 w-5" />
         Reserve a Sit-in
       </Button>
-    </header>
+    </header> -->
 
-    <!-- Key Metrics -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-      <Card class="bg-[#212121]">
-        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle class="text-sm font-medium">Sessions Remaining</CardTitle>
-          <Users class="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div class="text-2xl font-bold">{{ student.sessionsRemaining }} / {{ student.maxSessions }}</div>
-          <Progress :model-value="sessionProgress" class="mt-2 h-3" />
-          <p class="text-xs text-muted-foreground mt-1">
-            {{ student.maxSessions - student.sessionsRemaining }} sessions used
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card class="bg-[#212121]">
-        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle class="text-sm font-medium">Total Points</CardTitle>
-          <Star class="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div class="text-2xl font-bold">{{ student.points }}</div>
-          <p class="text-xs text-muted-foreground">
-            Earned from successful sit-ins
-          </p>
-        </CardContent>
-      </Card>
-
-       <Card class="md:col-span-2 lg:col-span-1 bg-[#212121]">
-        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle class="text-sm font-medium">Next Sit-in</CardTitle>
-          <CalendarClock class="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div v-if="nextSitIn" class="space-y-1">
-            <p class="text-lg font-semibold">{{ nextSitIn.location }}</p>
-            <p class="text-sm text-muted-foreground">
-              {{ formatDate(nextSitIn.dateTime) }}
-            </p>
-            <p class="text-xs text-muted-foreground">Status: {{ nextSitIn.status }}</p>
-          </div>
-          <div v-else class="text-center py-4">
-            <p class="text-muted-foreground">No upcoming sit-ins scheduled.</p>
-            <Button variant="link" class="mt-2" @click="reserveSitIn">Schedule Now</Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-
-    <!-- Main Sections -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Announcements -->
-      <Card class="lg:col-span-1 bg-[#212121]">
-        <CardHeader>
-          <CardTitle>Announcements</CardTitle>
-          <CardDescription>Latest updates from the admin.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ScrollArea class="h-[350px] pr-4">
-            <div v-if="announcements.length > 0" class="space-y-4">
-              <div v-for="announcement in announcements.slice(0,5)" :key="announcement.id" class="p-3 border rounded-md bg-[#2a2a2a]">
-                <h4 class="font-semibold text-sm mb-1">{{ announcement.title }}</h4>
-                <p class="text-xs text-muted-foreground leading-relaxed">{{ announcement.content.substring(0,100) }}{{ announcement.content.length > 100 ? '...' : '' }}</p>
-                <p class="text-xs text-muted-foreground mt-2">{{ formatDate(announcement.date, true) }}</p>
+      <!-- Left Column -->
+      <div class="flex flex-col gap-6">
+        <!-- Sessions Remaining Card -->
+        <Card class="bg-[#212121]">
+          <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle class="text-sm font-medium">Sessions Remaining</CardTitle>
+            <Users class="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div class="text-2xl font-bold">{{ student.sessions }} / {{ 30 }}</div>
+            <Progress :model-value="sessionProgress" class="mt-2 h-3" />
+            <p class="text-xs text-muted-foreground mt-1">
+              {{ 30 - Number(student.sessions) }} sessions used
+            </p>
+          </CardContent>
+        </Card>
+
+        <!-- Total Points Card -->
+        <Card class="bg-[#212121]">
+          <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle class="text-sm font-medium">Total Points</CardTitle>
+            <Star class="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div class="text-2xl font-bold">{{ points }}</div>
+            <p class="text-xs text-muted-foreground">
+              Earned from successful sit-ins
+            </p>
+          </CardContent>
+        </Card>
+
+        <!-- Announcements Card -->
+        <Card class="bg-[#212121]">
+          <CardHeader>
+            <CardTitle>Announcements</CardTitle>
+            <CardDescription>Latest updates from the admin.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea class="h-[350px] pr-4">
+              <div v-if="announcements.length > 0" class="space-y-4">
+                <div v-for="announcement in announcements.slice(0,5)" :key="announcement.announcement_id" class="p-3 border rounded-md bg-[#2a2a2a]">
+                  <h4 class="font-semibold text-sm mb-1">CCS Admin</h4>
+                  <p class="text-xs text-muted-foreground leading-relaxed">{{ announcement.announcement_message.substring(0,100) }}{{ announcement.announcement_message.length > 100 ? '...' : '' }}</p>
+                  <p class="text-xs text-muted-foreground mt-2">{{ formatDate(announcement.announcement_date, true) }}</p>
+                </div>
+              </div>
+              <div v-else class="text-center py-6">
+                <MegaphoneOff class="mx-auto h-12 w-12 text-muted-foreground" />
+                <p class="mt-2 text-muted-foreground">No new announcements.</p>
+              </div>
+            </ScrollArea>
+            <Button v-if="announcements.length > 5" variant="outline" class="w-full mt-4" @click="viewAllAnnouncements">View All Announcements</Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      <!-- Right Column -->
+      <div class="flex flex-col gap-6 col-span-2">
+        <!-- Sit-in Activity Chart Card -->
+        <Card class="bg-[#212121] flex flex-col flex-grow">
+          <CardHeader>
+            <CardTitle>Sit-in Activity</CardTitle>
+            <CardDescription>Your sit-in count over the last 4 weeks.</CardDescription>
+          </CardHeader>
+          <CardContent class="md:h-[350px] flex-grow flex">
+            <div class="relative w-full h-full">
+              <Bar v-if="chartData.labels?.length" :data="chartData" :options="chartOptions" />
+              <div v-else class="flex items-center justify-center h-full">
+                <p class="text-muted-foreground">Not enough data for chart.</p>
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        <!-- Recent Sit-in History Card -->
+        <Card class="bg-[#212121]">
+          <CardHeader>
+            <CardTitle>Recent Sit-in History</CardTitle>
+            <CardDescription>Your last few sit-in sessions.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table v-if="sitInHistory.length > 0">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Purpose</TableHead>
+                  <TableHead>Laboratory</TableHead>
+                  <TableHead>Time In</TableHead>
+                  <TableHead>Time Out</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow v-for="entry in sitInHistory.slice(0, 5)" :key="entry.id">
+                  <TableCell class="max-w-[150px] truncate" :title="entry.purpose">{{ entry.purpose }}</TableCell>
+                  <TableCell>{{ entry.laboratory }}</TableCell>
+                  <TableCell>{{ formatDate(entry.timeIn, true) }}</TableCell>
+                  <TableCell >
+                      {{ entry.timeOut ? formatDate(entry.timeOut, true) : 'Ongoing' }}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
             <div v-else class="text-center py-6">
-              <MegaphoneOff class="mx-auto h-12 w-12 text-muted-foreground" />
-              <p class="mt-2 text-muted-foreground">No new announcements.</p>
+              <History class="mx-auto h-12 w-12 text-muted-foreground" />
+              <p class="mt-2 text-muted-foreground">No sit-in history yet.</p>
             </div>
-          </ScrollArea>
-          <Button v-if="announcements.length > 5" variant="outline" class="w-full mt-4" @click="viewAllAnnouncements">View All Announcements</Button>
-        </CardContent>
-      </Card>
-
-      <!-- Sit-in Activity Chart -->
-      <Card class="lg:col-span-2 bg-[#212121]">
-        <CardHeader>
-          <CardTitle>Sit-in Activity</CardTitle>
-          <CardDescription>Your sit-in count over the last 4 weeks.</CardDescription>
-        </CardHeader>
-        <CardContent class="h-[300px] md:h-[350px]">
-          <Bar v-if="chartData.labels?.length" :data="chartData" :options="chartOptions" />
-          <div v-else class="flex items-center justify-center h-full">
-            <p class="text-muted-foreground">Not enough data for chart.</p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <!-- Upcoming Sit-ins -->
-      <Card class="lg:col-span-1 bg-[#212121]">
-        <CardHeader>
-          <CardTitle>Upcoming Sit-ins</CardTitle>
-          <CardDescription>Your next few scheduled sessions.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div v-if="upcomingSitIns.length > 0">
-            <ul class="space-y-3">
-              <li v-for="sitin in upcomingSitIns.slice(0, 3)" :key="sitin.id" class="flex items-center justify-between p-3 rounded-md border hover:bg-accent">
-                <div>
-                  <p class="font-medium">{{ sitin.location }}</p>
-                  <p class="text-xs text-muted-foreground">{{ formatDate(sitin.dateTime) }}</p>
-                </div>
-                <Badge :variant="sitin.status === 'Confirmed' ? 'default' : 'secondary'">{{ sitin.status }}</Badge>
-              </li>
-            </ul>
-            <Button v-if="upcomingSitIns.length > 3" variant="outline" class="w-full mt-4" @click="viewAllUpcoming">View All</Button>
-          </div>
-          <div v-else class="text-center py-6">
-            <CalendarX2 class="mx-auto h-12 w-12 text-muted-foreground" />
-            <p class="mt-2 text-muted-foreground">No upcoming sit-ins.</p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <!-- Recent Sit-in History -->
-      <Card class="lg:col-span-2 bg-[#212121]">
-        <CardHeader>
-          <CardTitle>Recent Sit-in History</CardTitle>
-          <CardDescription>Your last few completed sit-ins.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table v-if="sitInHistory.length > 0">
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Location</TableHead>
-                <TableHead>Duration</TableHead>
-                <TableHead class="text-right">Points Earned</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow v-for="entry in sitInHistory.slice(0, 5)" :key="entry.id">
-                <TableCell>{{ formatDate(entry.date) }}</TableCell>
-                <TableCell>{{ entry.location }}</TableCell>
-                <TableCell>{{ entry.duration }}</TableCell>
-                <TableCell class="text-right">
-                  <Badge :variant="entry.pointsEarned > 0 ? 'default' : 'outline'">
-                    {{ entry.pointsEarned > 0 ? `+${entry.pointsEarned}` : '-' }}
-                  </Badge>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-          <div v-else class="text-center py-6">
-            <History class="mx-auto h-12 w-12 text-muted-foreground" />
-            <p class="mt-2 text-muted-foreground">No sit-in history yet.</p>
-          </div>
-           <Button variant="outline" class="w-full mt-4" @click="viewFullHistory">View Full History</Button>
-        </CardContent>
-      </Card>
+            <Button variant="outline" class="w-full mt-4" @click="viewFullHistory">View Full History</Button>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeMount, watch } from 'vue'; // watch is needed
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
+// Badge is not used in this specific table version, can be removed if not used elsewhere
+// import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Users, Star, CalendarPlus, CalendarClock, CalendarX2, MegaphoneOff, History } from 'lucide-vue-next';
+import { Users, Star, CalendarPlus, MegaphoneOff, History } from 'lucide-vue-next';
 import { useRouter } from 'vue-router';
-// Chart.js integration
+import { useStudentStore } from '@/stores/student.store';
+import { getStudentPoints } from '@/api/student';
 import { Bar } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, type ChartOptions, type ChartData } from 'chart.js';
+import { getAnnouncements } from '@/api/announcement';
+import type { Announcement } from '@/types/Announcement';
+import { getSitinsByStudent } from '@/api/sitin';
+import type { SitinByStudent } from '@/types/Sitin';
+import { errorToast } from '@/library/toast';
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
+const { student } = useStudentStore();
 const router = useRouter();
 
-// Mock Data (replace with actual API calls)
-interface Student {
-  name: string;
-  sessionsRemaining: number;
-  maxSessions: number;
-  points: number;
-}
+const announcements = ref<Announcement[]>([]);
+const points = ref<string>();
 
-interface SitIn {
+interface DashboardSitInHistoryEntry {
   id: string;
-  dateTime: string;
-  location: string;
-  status: 'Confirmed' | 'Pending' | 'Cancelled'; // For upcoming
+  purpose: string;
+  laboratory: string;
+  timeIn: string;
+  timeOut: string | null;
 }
 
-interface SitInHistoryEntry {
-  id: string;
-  date: string;
-  location: string;
-  duration: string;
-  pointsEarned: number;
+const sitInHistory = ref<DashboardSitInHistoryEntry[]>([]);
+
+// --- Helper function to get week start (Monday) and end (Sunday) ---
+function getWeekRange(dateRef: Date, weekOffset: number = 0): { start: Date, end: Date } {
+  const date = new Date(dateRef);
+  date.setDate(date.getDate() + (weekOffset * 7));
+
+  const dayOfWeek = date.getDay();
+  const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+
+  const startDate = new Date(date);
+  startDate.setDate(date.getDate() + diffToMonday);
+  startDate.setHours(0, 0, 0, 0);
+
+  const endDate = new Date(startDate);
+  endDate.setDate(startDate.getDate() + 6);
+  endDate.setHours(23, 59, 59, 999);
+
+  return { start: startDate, end: endDate };
 }
 
-interface Announcement {
-  id: string;
-  title: string;
-  content: string;
-  date: string;
-}
 
-const student = ref<Student>({
-  name: 'Alex Johnson',
-  sessionsRemaining: 18,
-  maxSessions: 30,
-  points: 250,
+const loadDashboardData = async () => {
+  try {
+    const pointsResponse = await getStudentPoints(student.idno);
+    points.value = pointsResponse.points;
+
+    const announceResponse = await getAnnouncements();
+    announcements.value = announceResponse.announcements;
+
+    if (student && student.idno) {
+      const sitinsResponse = await getSitinsByStudent(student.idno);
+      const sortedSitins = sitinsResponse.sitins.sort((a: { sitin_timein: string | number | Date; }, b: { sitin_timein: string | number | Date; }) => new Date(b.sitin_timein).getTime() - new Date(a.sitin_timein).getTime());
+
+      sitInHistory.value = sortedSitins.map((sitin: SitinByStudent) => ({
+        id: sitin.sitin_id,
+        purpose: sitin.sitin_purpose,
+        laboratory: sitin.sitin_laboratory,
+        timeIn: sitin.sitin_timein,
+        timeOut: sitin.sitin_timeout,
+      }));
+    } else {
+      console.warn("Student ID not available for fetching sit-in history.");
+      sitInHistory.value = [];
+    }
+  } catch (error) {
+    console.error("Failed to load dashboard data:", error);
+    errorToast("Could not load some dashboard data. Please try refreshing.");
+  }
+};
+
+onBeforeMount(async () => {
+  if (student && student.idno) {
+    await loadDashboardData();
+    // After data is loaded, generate chart data
+    // This ensures sitInHistory is populated before chart generation attempt
+    generateSitInActivityChartData();
+  } else {
+    errorToast("Student information not available. Dashboard may not load correctly.");
+    console.error("Student ID not available on mount.");
+    generateSitInActivityChartData(); // Generate with empty data if no student
+  }
 });
 
-const upcomingSitIns = ref<SitIn[]>([
-  { id: 's1', dateTime: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), location: 'Library Section A', status: 'Confirmed' },
-  { id: 's2', dateTime: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), location: 'Study Hall B12', status: 'Confirmed' },
-  { id: 's3', dateTime: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(), location: 'Quiet Zone Room 3', status: 'Pending' },
-]);
+const sessionProgress = computed(() => (Number(student.sessions) / 30) * 100);
 
-const nextSitIn = computed(() => {
-  return upcomingSitIns.value.filter(s => s.status === 'Confirmed').sort((a,b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())[0] || null;
-});
-
-const sitInHistory = ref<SitInHistoryEntry[]>([
-  { id: 'h1', date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), location: 'Library Section A', duration: '2 hours', pointsEarned: 10 },
-  { id: 'h2', date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), location: 'Study Hall B12', duration: '1.5 hours', pointsEarned: 5 },
-  { id: 'h3', date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), location: 'Quiet Zone Room 3', duration: '3 hours', pointsEarned: 15 },
-  { id: 'h4', date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), location: 'Library Section C', duration: '1 hour', pointsEarned: 0 },
-]);
-
-const announcements = ref<Announcement[]>([
-  { id: 'a1', title: 'System Maintenance Scheduled', content: 'Please be advised that the sit-in system will be down for maintenance on Sunday from 2 AM to 4 AM.', date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() },
-  { id: 'a2', title: 'New Sit-in Location Available', content: 'We have opened a new sit-in location in the West Wing, Room 101. It features enhanced quiet zones.', date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() },
-  { id: 'a3', title: 'Reminder: Quiet Hours', content: 'A friendly reminder to maintain silence in designated quiet zones to ensure a productive environment for everyone.', date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() },
-]);
-
-// Computed properties
-const sessionProgress = computed(() => (student.value.sessionsRemaining / student.value.maxSessions) * 100);
-
-// Chart Data & Options
 const chartData = ref<ChartData<'bar'>>({
   labels: [],
   datasets: [{
-    label: 'Sit-ins',
-    backgroundColor: '#00BD7E', // Theme primary color
+    label: 'Completed Sit-ins', // Updated label
+    backgroundColor: '#00BD7E',
     borderColor: '#00BD7E',
     borderWidth: 1,
     borderRadius: 4,
@@ -269,15 +248,15 @@ const chartOptions = ref<ChartOptions<'bar'>>({
       beginAtZero: true,
       ticks: {
         stepSize: 1,
-        color: '#FFFFFF', // Changed to white
+        color: '#FFFFFF',
       },
       grid: {
-        color: 'rgba(255, 255, 255, 0.1)', // Adjusted grid line color for better contrast
+        color: 'rgba(255, 255, 255, 0.1)',
       }
     },
     x: {
       ticks: {
-        color: '#FFFFFF', // Changed to white
+        color: '#FFFFFF',
       },
       grid: {
         display: false,
@@ -290,34 +269,65 @@ const chartOptions = ref<ChartOptions<'bar'>>({
     },
     tooltip: {
       backgroundColor: '#212121',
-      titleColor: '#FFFFFF', // Explicitly white
-      bodyColor: '#FFFFFF',  // Explicitly white
+      titleColor: '#FFFFFF',
+      bodyColor: '#FFFFFF',
       borderColor: 'hsl(var(--border))',
       borderWidth: 1,
     }
   }
 });
 
-// Simulate fetching chart data
-const generateChartData = () => {
-  const labels = ['Week -3', 'Week -2', 'Last Week', 'This Week'];
-  const data = [
-    Math.floor(Math.random() * 5) + 1,
-    Math.floor(Math.random() * 5) + 1,
-    Math.floor(Math.random() * 5) + 1,
-    Math.floor(Math.random() * 5) + 1,
+// Renamed generateChartData to be more specific
+const generateSitInActivityChartData = () => {
+  if (!sitInHistory.value || sitInHistory.value.length === 0) {
+    chartData.value = { labels: ['Week -3', 'Week -2', 'Last Week', 'This Week'], datasets: [{ ...chartData.value.datasets[0], data: [0,0,0,0] }] };
+    return;
+  }
+
+  const today = new Date();
+  const weeklyCounts = [0, 0, 0, 0]; // Index 0: Week -3, ..., 3: This Week
+
+  const weekRanges = [
+    getWeekRange(today, -3),
+    getWeekRange(today, -2),
+    getWeekRange(today, -1),
+    getWeekRange(today, 0),
   ];
+
+  // Filter for completed sit-ins (those with a timeOut)
+  const completedSitIns = sitInHistory.value.filter(s => s.timeOut !== null);
+
+  for (const sitin of completedSitIns) {
+    if (!sitin.timeOut) continue; // Should be redundant due to filter, but good practice
+    const sitInCompletionDate = new Date(sitin.timeOut); // Use timeOut to determine week of completion
+
+    for (let i = 0; i < weekRanges.length; i++) {
+      if (sitInCompletionDate >= weekRanges[i].start && sitInCompletionDate <= weekRanges[i].end) {
+        weeklyCounts[i]++;
+        break;
+      }
+    }
+  }
+
   chartData.value = {
-    labels,
-    datasets: [{ ...chartData.value.datasets[0], data }]
+    labels: ['Week -3', 'Week -2', 'Last Week', 'This Week'],
+    datasets: [{
+      ...chartData.value.datasets[0],
+      data: weeklyCounts,
+    }]
   };
 };
 
-onMounted(() => {
-  generateChartData();
-});
+// `onMounted` is primarily for DOM interactions or things that need the DOM to be ready.
+// Since chart generation depends on data, it's better handled after data load or via watcher.
+// We already call generateSitInActivityChartData in onBeforeMount after loadDashboardData completes.
 
-// Methods for navigation (implement with your router)
+// Watch for changes in sitInHistory to regenerate chart if data is updated later
+watch(sitInHistory, () => {
+    generateSitInActivityChartData();
+}, { deep: true });
+
+
 const reserveSitIn = () => {
   router.push("/reservation")
 };
@@ -329,27 +339,22 @@ const viewFullHistory = () => {
 const viewAllAnnouncements = () => {
   router.push("/announcement")
 };
-const viewAllUpcoming = () => {
-  console.log('Navigate to all upcoming sitins page');
-};
 
-// Helper function for formatting dates
-const formatDate = (dateString: string, includeTime = false) => {
+const formatDate = (dateString: string | null, includeTime = false) => {
+  if (!dateString) return 'N/A';
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return 'Invalid Date';
+
   const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
   if (includeTime) {
     options.hour = '2-digit';
     options.minute = '2-digit';
   }
-  return new Date(dateString).toLocaleDateString(undefined, options);
+  return date.toLocaleDateString(undefined, options);
 };
 </script>
-
 <style scoped>
-/* Additional custom styles if needed */
-/* Chart.js needs a sized container to render properly */
-.chart-container {
-  position: relative;
-  height: 300px; /* Or any desired height */
-  width: 100%;
-}
+/* Chart.js needs a sized container to render properly.
+   The `relative w-full h-full` on the chart's wrapper div and
+   `responsive: true, maintainAspectRatio: false` in chart options handle this. */
 </style>

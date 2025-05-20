@@ -76,7 +76,6 @@ const state = reactive({
   sitin_laboratory: '',
 })
 const data = computed(() => ({
-  labels: ['Sessions', ''],
   datasets: [
     {
       borderWidth: 0,
@@ -87,7 +86,6 @@ const data = computed(() => ({
   ],
 }))
 const staticData = {
-  labels: ['Sessions'],
   datasets: [
     {
       borderWidth: 0,

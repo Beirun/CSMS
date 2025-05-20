@@ -1,4 +1,5 @@
 export const setDate = (date: string | Date) =>{
+    console.log("date",date);
     const newDate = new Date(date).toLocaleString("en-US", {
         year: "numeric",
         month: "2-digit",

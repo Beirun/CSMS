@@ -4,6 +4,14 @@ import Megaphone from '@/components/icons/Megaphone.vue'
 import AdminNavbar from '@/components/AdminSidebar.vue'
 import { onBeforeMount, ref } from 'vue'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
+import {
+  Card,
+  CardContent,
+  // CardDescription, // Can be used if needed
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { errorToast, successToast } from '@/library/toast'
 import { setDate } from '@/library/date'
 import type { Announcement } from '@/types/Announcement'
@@ -37,6 +45,15 @@ const handleCreateAnnouncement = async () => {
     closeModal()
   }
 }
+const formatTimelineDate = (dateString: string) => {
+  const formattedDate = setDate(dateString); // Use your existing formatter
+  const parts = formattedDate.split(','); // Assuming format like "Month Day, Year"
+  return {
+    main: parts[0]?.trim() || formattedDate,
+    secondary: parts[1]?.trim() || '',
+  };
+};
+const timelineItemSpacing = '2.5rem'; // Corresponds to space-y-10
 
 </script>
 <template>
@@ -96,20 +113,125 @@ const handleCreateAnnouncement = async () => {
       </TransitionRoot>
     </div>
     <div class="w-[85%] h-[5px] bg-[#4d4d4d] my-10"></div>
-    <!-- <div class="min-h-100 flex items-center justify-center">
           
-    </div> -->
-    <div class="min-h-100 w-[85%] pb-15 flex items-center justify-center">
-      <div v-if="announcements.length > 0" class="flex flex-col gap-25 py-5">
-        <div class="w-full flex " :class="index % 2 === 1 ? 'flex-row-reverse' : ''" v-for="(announcement,index) in announcements" :key="announcement.announcement_id">
-          <div :class="index % 2 === 1 ? 'hover:drop-shadow-announcement-card-right hover:-translate-x-7.5' : 'hover:drop-shadow-announcement-card-left hover:translate-x-7.5'" class="shadow-lg shadow-black/50 flex flex-col gap-2 w-2/3 bg-[#2e2e2e] p-5 rounded-md  transition-all duration-300  hover:shadow-md hover:shadow-[#2e2e2e]">
-            <p class="text-4xl font-bold">CCS Admin</p>
-            <p class="text-2xl font-semibold">{{ setDate(announcement.announcement_date) }}</p>
-            <p class="text-xl font-semibold">{{ announcement.announcement_message }}</p>
+    <div v-if="!loaded" :class="`space-y-10`"> 
+      <div v-for="i in 3" :key="`skeleton-timeline-${i}`" class="flex items-start">
+        <!-- Skeleton Date -->
+        <div class="w-20 sm:w-24 text-right pr-3 sm:pr-4 flex-shrink-0 pt-0.5">
+          <Skeleton class="h-4 w-3/4 mb-1 ml-auto" />
+          <Skeleton class="h-3 w-1/2 ml-auto" />
+        </div>
+        <!-- Skeleton Dot & Line -->
+        <div class="relative mx-1 sm:mx-2 flex-shrink-0">
+          <Skeleton class="h-4 w-4 sm:h-5 sm:w-5 rounded-full mt-[1px]" />
+          <!-- Adjust height based on typical card height + spacing -->
+          <Skeleton :class="`absolute top-5 sm:top-6 left-1/2 w-0.5 h-[calc(100% + ${timelineItemSpacing})] -translate-x-1/2`" />
+        </div>
+        <!-- Skeleton Card -->
+        <div class="flex-1 min-w-0 pl-3 sm:pl-4">
+          <Card>
+            <CardHeader class="py-3 sm:py-4 px-4 sm:px-5">
+              <Skeleton class="h-5 w-3/5" />
+            </CardHeader>
+            <CardContent class="py-3 sm:py-4 px-4 sm:px-5 space-y-2">
+              <Skeleton class="h-4 w-full" />
+              <Skeleton class="h-4 w-5/6" />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actual Timeline -->
+    <div v-else class="pb-8 flex w-8/10">
+      
+      <div v-if="announcements.length > 0" :class="`space-y-10 grid w-full`">
+        <div
+          v-for="(announcement, index) in announcements"
+          :key="announcement.announcement_id"
+          class="flex items-center -ml-5"
+        >
+        <!-- Content Card (Right of timeline) -->
+          <div class="flex-1 min-w-0 pl-3 sm:pl-4 ">
+            <Card v-if="index%2==0" class="hover:shadow-xl -ml-10 hover:bg-[#212121]  hover:shadow-[#00BD7E] transition-shadow border-0 duration-300 ease-in-out group w-150 bg-gradient-to-l from-[#212121] via-[#212121] via-[85%] to-transparent">
+              <CardHeader class="py-3 sm:py-4 px-4 sm:px-5">
+                <CardTitle class="text-3xl leading-1 text-foreground group-hover:text-primary transition-colors">
+                  <!-- Using a generic title, or use announcement.title if available -->
+                  Announcement <!-- Was "CCS Admin", now more generic. Can be dynamic. -->
+                </CardTitle>
+                <!-- Optional: If you want to show "CCS Admin" subtly -->
+                <!-- <CardDescription class="text-xs pt-1">By CCS Admin</CardDescription> -->
+              </CardHeader>
+              <CardContent class="py-3 sm:py-4 px-4 sm:px-5">
+                <p class="text-base text-foreground/90 leading-relaxed">
+                  {{ announcement.announcement_message }}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+          <!-- Date Column (Left of timeline) -->
+          <div class="w-20 sm:w-24 text-right pr-3 sm:pr-4 flex-shrink-0 pt-0.5">
+            <div v-if="index%2==1">
+              <p class="text-sm font-medium text-muted-foreground">
+                {{ formatTimelineDate(announcement.announcement_date).main }}
+              </p>
+              <p class="text-xs text-muted-foreground/80">
+                {{ formatTimelineDate(announcement.announcement_date).secondary }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Timeline Dot & Connector Line -->
+          <div class="relative mx-1 sm:mx-2 flex-shrink-0">
+            <!-- Dot -->
+            <div class="h-4 w-4 sm:h-5 sm:w-5 bg-[#2a2a2a] rounded-full border-2 border-[#00BD7E] flex items-center justify-center shadow-md mt-[1px]">
+              <!-- You could put an icon here if desired, e.g., BellIcon -->
+            </div>
+            <div v-if="index < announcements.length-1"
+              :class="`absolute left-2.25 w-0.5 h-[calc(1350%)] bg-[#00BD7E]`"
+              aria-hidden="true"
+            ></div>
+          </div>
+<!-- Date Column (Left of timeline) -->
+          <div class="w-20 sm:w-24 text-right pr-3 sm:pr-4 flex-shrink-0 pt-0.5">
+            <div v-if="index%2==0">
+
+              <p class="text-sm font-medium text-muted-foreground">
+                {{ formatTimelineDate(announcement.announcement_date).main }}
+              </p>
+              <p class="text-xs text-muted-foreground/80">
+                {{ formatTimelineDate(announcement.announcement_date).secondary }}
+              </p>
+            </div>
+          </div>
+          <!-- Content Card (Right of timeline) -->
+          <div class="flex-1 min-w-0 pl-3 sm:pl-4 ">
+            <Card :class="`${index%2==1? '-ml-20':''}`" v-if="index%2==1" class="hover:bg-[#212121]  hover:shadow-[#00BD7E] hover:shadow-xl transition-shadow border-0 duration-300 ease-in-out group w-150 bg-gradient-to-r from-[#212121] via-[#212121] via-[85%] to-transparent">
+              <CardHeader class="py-3 sm:py-4 px-4 sm:px-5">
+                <CardTitle class="text-3xl leading-1 text-foreground group-hover:text-primary transition-colors">
+                  <!-- Using a generic title, or use announcement.title if available -->
+                  Announcement <!-- Was "CCS Admin", now more generic. Can be dynamic. -->
+                </CardTitle>
+                <!-- Optional: If you want to show "CCS Admin" subtly -->
+                <!-- <CardDescription class="text-xs pt-1">By CCS Admin</CardDescription> -->
+              </CardHeader>
+              <CardContent class="py-3 sm:py-4 px-4 sm:px-5">
+                <p class="text-base text-foreground/90 leading-relaxed">
+                  {{ announcement.announcement_message }}
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
-      <div v-else class="text-4xl font-bold">NO ANNOUNCEMENTS YET</div>
+      <div v-else class="text-center py-12">
+        <h2 class="text-2xl font-semibold text-muted-foreground">
+          No Announcements Yet
+        </h2>
+        <p class="text-muted-foreground mt-2">
+          Check back later for new updates!
+        </p>
+      </div>
     </div>
   </div>
 </template>

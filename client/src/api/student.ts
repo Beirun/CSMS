@@ -38,3 +38,8 @@ export const getStudents = async () => {
     const response = await axios.get('http://localhost:3000/student')
     return response.data
 }
+
+export const getStudentPoints = async (idno : string) => {
+    const response = await axios.get('http://localhost:3000/student/points/'+idno);
+    return response.data
+}

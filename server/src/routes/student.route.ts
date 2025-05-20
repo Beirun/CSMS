@@ -55,4 +55,15 @@ app.put("/", async (req : Request, res : Response) => {
 
 })
 
+// get points from leaderboard
+app.get("/points/:idno", async(req: Request, res : Response) => {
+    try{
+        const {idno} = req.params;
+        const result = await db.query("SELECT points FROM leaderboard where idno= $1",[idno])
+        res.json( result.rows[0])
+
+    }catch(err : any){
+        res.status(500).json({ error: err.message });
+    }
+})
 export default app

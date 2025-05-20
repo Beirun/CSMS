@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue' // Added ref, computed, onMounted
+import { ref, computed, onMounted, onBeforeMount } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useStudentStore } from '@/stores/student.store'
 import {
@@ -8,28 +8,30 @@ import {
   SidebarFooter, SidebarHeader
 } from "@/components/ui/sidebar"
 import {
-  Megaphone, BookOpen, History, Folder, CalendarCheck, User, LogOut, Bell // Added Bell
+  Megaphone, BookOpen, History, Folder, CalendarCheck, User, LogOut, Bell, LayoutDashboard
 } from 'lucide-vue-next'
 import {
   Popover, PopoverContent, PopoverTrigger,
-} from '@/components/ui/popover' // Added Popover
-import { ScrollArea } from '@/components/ui/scroll-area' // Import ScrollArea
-import { setDate } from '@/library/date'; // Adjust path as needed
+} from '@/components/ui/popover'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { setDate } from '@/library/date';
+import type { Notification } from '@/types/Notification'
+import { getNotifications, updateNotification } from '@/api/notification'
+import { useNotificationStore } from '@/stores/student.store'
 
-
-interface Notification { // Same interface
-  id: string;
-  title: string;
-  message: string;
-  createdAt: Date;
-  read: boolean;
-  link?: string;
-  action?: () => void;
-}
+// interface Notification {
+//   notif_id: string;
+//   title: string;
+//   message: string;
+//   createdAt: Date;
+//   status: 'read' | 'unread';
+//   type: 'system' | 'update' | 'message' | 'alert'; // Added type, removed action
+// }
 
 const studentStore = useStudentStore()
-
+const {notifications, fetchNotifications} = useNotificationStore()
 const links = [
+    { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/announcement', label: 'Announcement', icon: Megaphone },
   { to: '/lab-rules', label: 'Lab Rules', icon: BookOpen },
   { to: '/history', label: 'Sitin History', icon: History },
@@ -40,45 +42,66 @@ const links = [
 
 const router = useRouter()
 
-const notifications = ref<Notification[]>([]); // Student notifications
+
+const recentNotifications = computed(() => {
+  return notifications.slice(0, 5);
+});
 
 const unreadNotificationCount = computed(() => {
-  return notifications.value.filter(n => !n.read).length;
+  return notifications.filter(n => n.status === 'unread').length;
 });
 
-onMounted(() => {
-  // Mock fetching student notifications
-  setTimeout(() => {
-    notifications.value = [
-      { id: 's1', title: 'Reservation Approved', message: 'Your reservation for Lab 302 on Oct 28, 2-4 PM is approved.', createdAt: new Date(Date.now() - 3600 * 1000 * 1), read: false, link: '/reservation' },
-      { id: 's2', title: 'New Announcement', message: 'Midterm exam schedule has been posted.', createdAt: new Date(Date.now() - 3600 * 1000 * 6), read: true, link: '/announcement' },
-    ];
-  }, 1200);
-});
-
-const handleNotificationClick = (notification: Notification) => {
-  if (!notification.read) {
-    notification.read = true;
+// onMounted(() => {
+//   setTimeout(() => {
+//     notifications.value = [
+//       { notif_id: 's0', title: 'Very New Alert!', message: 'This is the absolute latest update.', createdAt: new Date(Date.now() - 3600 * 1000 * 0.1), status: 'unread', type: 'alert' },
+//       { notif_id: 's1', title: 'Reservation Approved', message: 'Your reservation for Lab 302 on Oct 28, 2-4 PM is approved.', createdAt: new Date(Date.now() - 3600 * 1000 * 1), status: 'unread', type: 'alert' }, // e.g. type: 'alert'
+//       { notif_id: 's2', title: 'New Announcement', message: 'Midterm exam schedule has been posted.', createdAt: new Date(Date.now() - 3600 * 1000 * 6), status: 'read', type: 'update' },   // e.g. type: 'update'
+//       { notif_id: 's3', title: 'Resource Comment Reply', message: 'Admin replied to your comment on "Networking Basics".', createdAt: new Date(Date.now() - 3600 * 1000 * 24), status: 'unread', type: 'message' },
+//       { notif_id: 's4', title: 'Upcoming Maintenance', message: 'Platform maintenance scheduled for tomorrow.', createdAt: new Date(Date.now() - 3600 * 1000 * 30), status: 'read', type: 'system' },
+//       { notif_id: 's5', title: 'Old Notification 1', message: 'This is an older item.', createdAt: new Date(Date.now() - 3600 * 1000 * 48), status: 'read', type: 'update' },
+//       { notif_id: 's6', title: 'Old Notification 2', message: 'Another older item not in recent.', createdAt: new Date(Date.now() - 3600 * 1000 * 72), status: 'unread', type: 'message' },
+//     ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+//   }, 1200);
+// });
+onBeforeMount(async() => {
+  fetchNotifications(studentStore.student.idno)
+})
+const handleNotificationClick = async (notification: Notification) => {
+  if (notification.status === 'unread') {
+    const originalNotification = notifications.find(n => n.notif_id === notification.notif_id);
+    if (originalNotification) {
+        originalNotification.status = 'read';
+    }
+    // API call to mark as read
+    await  updateNotification(notification.notif_id);
+    fetchNotifications(studentStore.student.idno)
   }
-  if (notification.link) {
-    router.push(notification.link);
-  } else if (notification.action) {
-    notification.action();
-  }
+  // If specific navigation is needed from popover based on type/title, add logic here.
+  // Example: if (notification.type === 'alert' && notification.title.includes('Reservation')) router.push('/reservation');
+  // For now, clicking mostly marks as read. User can go to full notification page.
 };
 
-const markAllAsRead = () => {
-  notifications.value.forEach(n => n.read = true);
+const markAllAsRead = async () => {
+  notifications.forEach(async (n) => {
+    if (n.status === 'unread') {
+      n.status = 'read';
+      await updateNotification(n.notif_id);
+      fetchNotifications(studentStore.student.idno)
+    }
+  });
+  // API call to mark all as read
 }
 
 const viewAllNotificationsPage = () => {
-  router.push('/notifications'); // Example route
+  router.push('/notifications');
 }
 
 const logOut = () => {
   studentStore.setUser("none")
   router.push('/login')
 }
+
 </script>
 
 <template>
@@ -86,7 +109,7 @@ const logOut = () => {
     <SidebarHeader>
       <div class="p-4 border-b flex items-center border-[#333]">
         <img
-          @click="$router.push('/dashboard')" 
+          @click="$router.push('/dashboard')"
           src="@/assets/logo.svg"
           alt="Logo"
           class="cursor-pointer size-16 drop-shadow-logo"
@@ -126,46 +149,42 @@ const logOut = () => {
                     </span>
                   </button>
                 </PopoverTrigger>
-                <PopoverContent 
-                  side="right" 
-                  :side-offset="5" 
-                  class="w-80 p-0 border-[#444] bg-[#222222] text-neutral-100 shadow-xl rounded-md"
+                <PopoverContent
+                  side="right"
+                  :side-offset="5"
+                  class="w-80 p-0 border-[#444] ml-1 mb-10 bg-[#222222] text-neutral-100 shadow-xl rounded-md"
                   style="z-index: 100;"
                 >
                    <div class="p-3 border-b border-[#333]">
                     <div class="flex justify-between items-center">
-                      <h3 class="font-semibold text-md text-neutral-50">Notifications</h3>
-                      <button 
+                      <h3 class="font-semibold text-md text-neutral-50">Recent Notifications</h3>
+                      <button
                         v-if="notifications.length > 0 && unreadNotificationCount > 0"
-                        @click="markAllAsRead" 
+                        @click="markAllAsRead"
                         class="text-xs text-[#00BD7E] hover:underline"
                       >
                         Mark all as read
                       </button>
                     </div>
                   </div>
-                  <ScrollArea class="max-h-80">
                     <div class="p-1">
-                      <div v-if="notifications.length === 0" class="p-4 text-center text-sm text-neutral-400">
+                      <div v-if="recentNotifications.length === 0" class="p-4 text-center text-sm text-neutral-400">
                         No new notifications.
                       </div>
-                      <a
-                        v-for="notification in notifications"
-                        :key="notification.id"
+                      <div
+                        v-for="notification in recentNotifications"
+                        :key="notification.notif_id"
                         @click="handleNotificationClick(notification)"
-                        :href="notification.link || '#'"
-                        class="block p-3 hover:bg-[#333333] rounded-md transition-colors"
-                        :class="{ 'cursor-pointer': notification.link, 'pointer-events-none': !notification.link && !notification.action }"
+                        class="block p-3 hover:bg-[#333333] rounded-md transition-colors cursor-pointer"
                       >
                         <div class="flex items-start justify-between">
                           <span class="font-medium text-sm text-neutral-100 line-clamp-1">{{ notification.title }}</span>
-                          <span v-if="!notification.read" class="ml-2 mt-1 h-2 w-2 bg-[#00BD7E] rounded-full flex-shrink-0"></span>
+                          <span v-if="notification.status === 'unread'" class="ml-2 mt-1 h-2 w-2 bg-[#00BD7E] rounded-full flex-shrink-0"></span>
                         </div>
                         <p class="text-xs text-neutral-300 mt-1 line-clamp-2">{{ notification.message }}</p>
-                        <p class="text-xs text-neutral-500 mt-1">{{ setDate(notification.createdAt) }}</p>
-                      </a>
+                        <p class="text-xs text-neutral-500 mt-1">{{ setDate(notification.createdat) }}</p>
+                      </div>
                     </div>
-                  </ScrollArea>
                   <div v-if="notifications.length > 0" class="p-2 border-t border-[#333] text-center">
                     <button @click="viewAllNotificationsPage" class="text-sm text-[#00BD7E] hover:underline">
                       View All Notifications
@@ -201,5 +220,17 @@ const logOut = () => {
 }
 .drop-shadow-logo {
   filter: drop-shadow(0px 2px 4px rgba(0, 189, 126, 0.5));
+}
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 </style>

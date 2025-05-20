@@ -7,6 +7,7 @@ import resourcesRoute from "./routes/resource.route";
 import schedulesRoute from "./routes/schedules.route";
 import pcRoute from "./routes/pc.route";
 import reservationRoute from "./routes/reservation.route";
+import notificationRoute from "./routes/notification.route";
 import fileUpload from "express-fileupload";
 const app = express();
 
@@ -21,7 +22,7 @@ app.use("/resource", resourcesRoute);
 app.use("/schedules", schedulesRoute);
 app.use("/pc", pcRoute);
 app.use("/reservation",reservationRoute)
-
+app.use("/notification",notificationRoute)
 
 app.listen(3000, () => {
     console.log("Server is running on port 3000");

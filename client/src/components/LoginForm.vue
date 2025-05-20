@@ -3,13 +3,14 @@ import { RouterLink, useRouter } from 'vue-router'
 import LibraryAmico from './icons/LibraryAmico.vue';
 import { reactive } from 'vue';
 import { getStudent } from '@/api/student';
-import { useStudentStore } from '@/stores/student.store';
+import { useStudentStore, useNotificationStore } from '@/stores/student.store';
 import { errorToast, successToast } from '@/library/toast';
 import { closeForm } from '@/library/form';
 import Input from './ui/TextField.vue';
  
 const studentStore = useStudentStore();
 
+const notificationStore = useNotificationStore();
 
 
 const state = reactive({
@@ -35,6 +36,7 @@ const navigateToDashboard = async () => {
     if(state.username === 'admin' && state.password === 'admin') {
         successToast('Login successful');
         navigateToPage('/dashboard/admin');
+        notificationStore.fetchNotifications("0")
         
         setTimeout(() => {
             studentStore.setUser("admin")
@@ -50,6 +52,7 @@ const navigateToDashboard = async () => {
         errorToast('Invalid username or password');
         return;
     }
+    notificationStore.fetchNotifications(studentInfo.idno)
     successToast('Login successful');
     
     navigateToPage('/dashboard');

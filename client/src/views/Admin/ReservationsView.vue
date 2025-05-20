@@ -246,7 +246,7 @@
       <Button @click="approveReservation(selectedReservation)" class="bg-[#00BD7E] hover:bg-[#00BD7E]/90">
         Approve
       </Button>
-      <Button @click="rejectReservation(selectedReservation.id)" variant="destructive">
+      <Button @click="rejectReservation(selectedReservation)" variant="destructive">
         Disapprove
       </Button>
     </DialogFooter>
@@ -273,7 +273,7 @@ import { errorToast, successToast } from '@/library/toast'
 import { addSitIn } from '@/api/sitin'
 import { updatePC } from '@/api/pc'
 import { type PC } from '@/types/PC'
-
+import { postNotification } from '@/api/notification'
 onBeforeMount(async () => {
   const response = await getReservations()
   console.log(response)
@@ -351,7 +351,7 @@ async function approveReservation(reservation: StudentReservation) {
       status: 'Used'
     }
     await updatePC(updatedPC)
-    
+    await postNotification(reservation.idno, 'Reservation Approved', 'Your reservation has been approved!', 'update')
   } else {
     errorToast('Student is already seated-in')
   }
@@ -363,13 +363,15 @@ async function approveReservation(reservation: StudentReservation) {
   reservationLogs.value = reservations.value.filter(reservation => reservation.status !== 'Pending')
 }
 
-async function rejectReservation(id: string) {
-    const response = await updateReservation(id, 'Disapproved' )
+async function rejectReservation(reservation: StudentReservation) {
+    const response = await updateReservation(reservation.id, 'Disapproved' )
     if(!response.success) return
     successToast('Reservation Disapproved')
     isDialogOpen.value = false
     const reservationResponse = await getReservations()
+    await postNotification(reservation.idno, 'Reservation Disapproved', 'Your reservation has been disapproved!', 'update')
   console.log(response)
+  
   reservations.value = reservationResponse.reservation
   pendingReservations.value = reservations.value.filter(reservation => reservation.status === 'Pending')
   reservationLogs.value = reservations.value.filter(reservation => reservation.status !== 'Pending')

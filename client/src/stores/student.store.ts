@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { reactive, ref } from "vue";
-
+import type { Notification } from "@/types/Notification";
+import { getNotifications } from "@/api/notification";
 export const useStudentStore = defineStore("student",() => {
     const user = reactive({
         type: 'none',
@@ -38,4 +39,21 @@ export const useStudentStore = defineStore("student",() => {
     }
     return { student, setStudent, user, setUser };
     
+},{persist: true});
+
+export const useNotificationStore = defineStore("notification", () => {
+    const notifications = ref<Notification[]>([]);
+    const fetchNotifications = async (id:string) => {
+        try {
+            const response = await getNotifications(id);
+            console.log(response)
+            notifications.value = response.notifications;
+            console.log("Notifications fetched:", response.notifications);
+        } catch (error) {
+            console.error("Error fetching notifications:", error);
+        }
+        
+    }
+
+    return { notifications, fetchNotifications };
 },{persist: true});

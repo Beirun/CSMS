@@ -8,6 +8,7 @@ import { computed, onBeforeMount, ref } from 'vue'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
 import { getCurrentDate, setDate } from '@/library/date'
 import { errorToast, successToast } from '@/library/toast'
+import { postNotification } from '@/api/notification'
 
 const search = ref("")
 const pointChecked = ref(false)
@@ -76,6 +77,8 @@ const handleAddPoint = async () => {
   if (response.success) {
     successToast('Point added successfully!')
     await addSessionFromPoint(currentStudentSitin.value.idno)
+    await postNotification(currentStudentSitin.value.idno,"Sit-In Point Received","You received a point from your sitin.","system")
+
   } else {
     errorToast('Error adding point!')
   }
